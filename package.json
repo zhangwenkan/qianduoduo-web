@@ -1,0 +1,27 @@
+{
+  "name": "qian-duo-duo",
+  "version": "1.0.0",
+  "description": "简版养基宝 - 基金持仓管理工具",
+  "main": "main.js",
+  "scripts": {
+    "dev:mp-weixin": "uni -p mp-weixin",
+    "dev:mp-alipay": "uni -p mp-alipay",
+    "dev:h5": "uni",
+    "build:mp-weixin": "uni build -p mp-weixin",
+    "build:mp-alipay": "uni build -p mp-alipay",
+    "build:h5": "uni build"
+  },
+  "dependencies": {
+    "@dcloudio/uni-app": "3.0.0-4080720251210001",
+    "@dcloudio/uni-components": "3.0.0-4080720251210001",
+    "@dcloudio/uni-h5": "3.0.0-4080720251210001",
+    "@dcloudio/uni-mp-weixin": "3.0.0-4080720251210001",
+    "@dcloudio/uni-mp-alipay": "3.0.0-4080720251210001",
+    "vue": "^3.3.4"
+  },
+  "devDependencies": {
+    "@dcloudio/vite-plugin-uni": "3.0.0-4080720251210001",
+    "sass": "^1.69.5",
+    "vite": "^5.2.8"
+  }
+}
