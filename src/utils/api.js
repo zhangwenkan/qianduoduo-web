@@ -3,17 +3,12 @@
  * 数据来源：天天基金
  */
 
-import { callCloud } from './cloud.js'
+import { callCloud, getApiBase } from './cloud.js'
 
-// 判断平台
-// #ifdef H5
-const SEARCH_URL = '/api/fundsearch'
-const DETAIL_URL = '/api/fundgz'
-// #endif
-// #ifndef H5
-const SEARCH_URL = 'https://fundsuggest.eastmoney.com/FundSearch/api/FundSearchAPI.ashx'
-const DETAIL_URL = 'https://fundgz.1234567.com.cn'
-// #endif
+const isDev = import.meta.env.DEV
+
+const SEARCH_URL = isDev ? '/api/fundsearch' : `${getApiBase()}/api/fundsearch`
+const DETAIL_URL = isDev ? '/api/fundgz' : `${getApiBase()}/api/fundgz`
 
 /**
  * 根据估值时间获取时间描述
@@ -90,7 +85,7 @@ export const searchFund = (keyword) => {
 export const getFundDetail = (fundCode) => {
   return new Promise((resolve) => {
     uni.request({
-      url: `${DETAIL_URL}/js/${fundCode}.js`,
+      url: `${DETAIL_URL}?code=${fundCode}`,
       dataType: 'text',
       success: (res) => {
         try {

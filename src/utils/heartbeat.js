@@ -3,15 +3,13 @@
  * 基于基金前十大重仓股实时涨幅，通过AI计算估算涨幅
  */
 
-// 判断平台
-// #ifdef H5
-const HOLDINGS_URL = '/api/fundholdings'
-const STOCK_URL = '/api/stockquotes'
-// #endif
-// #ifndef H5
-const HOLDINGS_URL = 'https://fundf10.eastmoney.com/FundArchivesDatas.aspx'
-const STOCK_URL = 'https://web.sqt.gtimg.cn/q='
-// #endif
+import { getApiBase } from './cloud.js'
+
+const isDev = import.meta.env.DEV
+const API_BASE = isDev ? '' : getApiBase()
+
+const HOLDINGS_URL = isDev ? '/api/fundholdings' : `${API_BASE}/api/fundholdings`
+const STOCK_URL = isDev ? '/api/stockquotes' : `${API_BASE}/api/stockquotes`
 
 // 豆包API配置
 const DOUBAO_API_URL = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions'
@@ -143,9 +141,8 @@ export const getStockQuotes = (stockCodes) => {
       return `sz${code}`
     }).join(',')
     
-    // #ifdef H5
     uni.request({
-      url: `/api/stockquotes?${qtCodes}`,
+      url: `${STOCK_URL}?q=${qtCodes}`,
       dataType: 'text',
       success: (res) => {
         try {
@@ -161,27 +158,6 @@ export const getStockQuotes = (stockCodes) => {
         resolve([])
       }
     })
-    // #endif
-    
-    // #ifndef H5
-    uni.request({
-      url: STOCK_URL + qtCodes,
-      dataType: 'text',
-      success: (res) => {
-        try {
-          const quotes = parseTencentStockQuotes(res.data, stockCodes)
-          resolve(quotes)
-        } catch (e) {
-          console.error('解析股票行情失败:', e)
-          resolve([])
-        }
-      },
-      fail: (err) => {
-        console.error('获取股票行情失败:', err)
-        resolve([])
-      }
-    })
-    // #endif
   })
 }
 

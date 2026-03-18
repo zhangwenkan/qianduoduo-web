@@ -4,6 +4,8 @@
 
 const API_BASE = 'https://qianduoduo.dpdns.org'
 
+export const getApiBase = () => API_BASE
+
 export const callCloud = (name, data = {}) => {
   return new Promise((resolve, reject) => {
     if (name === 'fundSectors') {
