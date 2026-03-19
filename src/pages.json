@@ -6,14 +6,12 @@
         "navigationBarTitleText": "",
         "navigationStyle": "custom",
         "navigationBarTextStyle": "black",
-        "disableScroll": true,
         "app-plus": {
           "bounce": "none",
           "titleNView": false
         },
         "mp-weixin": {
-          "navigationStyle": "custom",
-          "disableScroll": true
+          "navigationStyle": "custom"
         },
         "h5": {
           "titleNView": false
