@@ -14,7 +14,8 @@ import {
 } from './sync.js'
 
 const STORAGE_KEYS = {
-  HOLDINGS: 'qdd_holdings'
+  HOLDINGS: 'qdd_holdings',
+  WATCHLIST: 'qdd_watchlist'
 }
 
 /**
@@ -187,6 +188,69 @@ export const syncData = async () => {
   return await smartSync()
 }
 
+/**
+ * 获取自选列表
+ */
+export const getWatchlist = () => {
+  try {
+    const data = uni.getStorageSync(STORAGE_KEYS.WATCHLIST)
+    return data ? JSON.parse(data) : []
+  } catch (e) {
+    console.error('获取自选列表失败:', e)
+    return []
+  }
+}
+
+/**
+ * 保存自选列表
+ */
+export const saveWatchlist = (watchlist) => {
+  try {
+    uni.setStorageSync(STORAGE_KEYS.WATCHLIST, JSON.stringify(watchlist))
+  } catch (e) {
+    console.error('保存自选列表失败:', e)
+  }
+}
+
+/**
+ * 添加自选
+ */
+export const addToWatchlist = (fund) => {
+  const watchlist = getWatchlist()
+  const exists = watchlist.find(w => w.fundCode === fund.fundCode)
+  if (exists) {
+    return false
+  }
+  const newItem = {
+    id: Date.now().toString(),
+    fundCode: fund.fundCode,
+    fundName: fund.fundName,
+    sectors: fund.sectors || [],
+    createdAt: new Date().toISOString()
+  }
+  watchlist.push(newItem)
+  saveWatchlist(watchlist)
+  return true
+}
+
+/**
+ * 从自选移除
+ */
+export const removeFromWatchlist = (id) => {
+  const watchlist = getWatchlist()
+  const newWatchlist = watchlist.filter(w => w.id !== id)
+  saveWatchlist(newWatchlist)
+  return true
+}
+
+/**
+ * 检查是否在自选中
+ */
+export const isInWatchlist = (fundCode) => {
+  const watchlist = getWatchlist()
+  return watchlist.some(w => w.fundCode === fundCode)
+}
+
 export default {
   getHoldings,
   saveHoldings,
@@ -196,5 +260,10 @@ export default {
   calculateStats,
   formatMoney,
   formatPercent,
-  syncData
+  syncData,
+  getWatchlist,
+  saveWatchlist,
+  addToWatchlist,
+  removeFromWatchlist,
+  isInWatchlist
 }

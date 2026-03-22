@@ -9,52 +9,127 @@
     <!-- 头部 -->
     <view class="header">
       <view class="header-left">
-        <text class="header-title">钱多多</text>
-        <text class="header-subtitle">让收益看得见</text>
+        <view class="header-title-row">
+          <image class="header-icon" src="/static/icons/moneybox.svg" mode="aspectFit" />
+          <text class="header-title">积金罐</text>
+        </view>
+        <text class="header-subtitle">每日积金，收益满罐</text>
       </view>
     </view>
 
     <!-- 统计卡片 Bento Grid -->
-    <view class="bento-grid">
-      <!-- 累计收益 -->
-      <view class="bento-card bento-card-main span-2">
-        <text class="card-label">累计收益</text>
-        <text class="card-value large" :class="stats.totalProfit >= 0 ? 'red' : 'green'">
-          {{ formatMoney(stats.totalProfit, true) }}
-        </text>
-        <view class="stat-pills">
-          <view class="stat-pill" :class="stats.totalProfit >= 0 ? 'up' : 'down'">
-            <text class="arrow">{{ stats.totalProfit >= 0 ? '↑' : '↓' }}</text>
-            <text>{{ formatPercent(stats.totalRate) }}</text>
+    <view class="bento-grid-wrapper" :class="{ 'bento-grid-collapsed': currentTab === 'watchlist' }">
+      <view class="bento-grid">
+        <!-- 总资产 -->
+      <view class="amount-card">
+        <!-- #ifdef H5 -->
+        <view id="lottie-canvas" class="lottie-canvas"></view>
+        <!-- #endif -->
+        <!-- #ifdef MP-WEIXIN -->
+        <canvas id="lottie-canvas" type="2d" class="lottie-canvas"></canvas>
+        <!-- #endif -->
+        <view class="amount-title">
+          <view class="coin">
+            <view class="side heads">
+              <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="100%" height="100%" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 4091.27 4091.73" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <g id="Layer_x0020_1">
+                  <metadata id="CorelCorpID_0Corel-Layer"></metadata>
+                  <g id="_1421344023328">
+                    <path fill="#F7931A" fill-rule="nonzero" d="M4030.06 2540.77c-273.24,1096.01 -1383.32,1763.02 -2479.46,1489.71 -1095.68,-273.24 -1762.69,-1383.39 -1489.33,-2479.31 273.12,-1096.13 1383.2,-1763.19 2479,-1489.95 1096.06,273.24 1763.03,1383.51 1489.76,2479.57l0.02 -0.02z"></path>
+                    <path fill="white" fill-rule="nonzero" d="M2947.77 1754.38c40.72,-272.26 -166.56,-418.61 -450,-516.24l91.95 -368.8 -224.5 -55.94 -89.51 359.09c-59.02,-14.72 -119.63,-28.59 -179.87,-42.34l90.16 -361.46 -224.36 -55.94 -92 368.68c-48.84,-11.12 -96.81,-22.11 -143.35,-33.69l0.26 -1.16 -309.59 -77.31 -59.72 239.78c0,0 166.56,38.18 163.05,40.53 90.91,22.69 107.35,82.87 104.62,130.57l-104.74 420.15c6.26,1.59 14.38,3.89 23.34,7.49 -7.49,-1.86 -15.46,-3.89 -23.73,-5.87l-146.81 588.57c-11.11,27.62 -39.31,69.07 -102.87,53.33 2.25,3.26 -163.17,-40.72 -163.17,-40.72l-111.46 256.98 292.15 72.83c54.35,13.63 107.61,27.89 160.06,41.3l-92.9 373.03 224.24 55.94 92 -369.07c61.26,16.63 120.71,31.97 178.91,46.43l-91.69 367.33 224.51 55.94 92.89 -372.33c382.82,72.45 670.67,43.24 791.83,-303.02 97.63,-278.78 -4.86,-439.58 -206.26,-544.44 146.69,-33.83 257.18,-130.31 286.64,-329.61l-0.07 -0.05zm-512.93 719.26c-69.38,278.78 -538.76,128.08 -690.94,90.29l123.28 -494.2c152.17,37.99 640.17,113.17 567.67,403.91zm69.43 -723.3c-63.29,253.58 -453.96,124.75 -580.69,93.16l111.77 -448.21c126.73,31.59 534.85,90.55 468.94,355.05l-0.02 0z"></path>
+                  </g>
+                </g>
+              </svg>
+            </view>
+            <view class="side tails">
+              <svg xmlns="http://www.w3.org/2000/svg" class="svg_back" xml:space="preserve" width="100%" height="100%" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 4091.27 4091.73" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <g id="Layer_x0020_1">
+                  <metadata id="CorelCorpID_0Corel-Layer"></metadata>
+                  <g id="_1421344023328">
+                    <path fill="#F7931A" fill-rule="nonzero" d="M4030.06 2540.77c-273.24,1096.01 -1383.32,1763.02 -2479.46,1489.71 -1095.68,-273.24 -1762.69,-1383.39 -1489.33,-2479.31 273.12,-1096.13 1383.2,-1763.19 2479,-1489.95 1096.06,273.24 1763.03,1383.51 1489.76,2479.57l0.02 -0.02z"></path>
+                    <path fill="white" fill-rule="nonzero" d="M2947.77 1754.38c40.72,-272.26 -166.56,-418.61 -450,-516.24l91.95 -368.8 -224.5 -55.94 -89.51 359.09c-59.02,-14.72 -119.63,-28.59 -179.87,-42.34l90.16 -361.46 -224.36 -55.94 -92 368.68c-48.84,-11.12 -96.81,-22.11 -143.35,-33.69l0.26 -1.16 -309.59 -77.31 -59.72 239.78c0,0 166.56,38.18 163.05,40.53 90.91,22.69 107.35,82.87 104.62,130.57l-104.74 420.15c6.26,1.59 14.38,3.89 23.34,7.49 -7.49,-1.86 -15.46,-3.89 -23.73,-5.87l-146.81 588.57c-11.11,27.62 -39.31,69.07 -102.87,53.33 2.25,3.26 -163.17,-40.72 -163.17,-40.72l-111.46 256.98 292.15 72.83c54.35,13.63 107.61,27.89 160.06,41.3l-92.9 373.03 224.24 55.94 92 -369.07c61.26,16.63 120.71,31.97 178.91,46.43l-91.69 367.33 224.51 55.94 92.89 -372.33c382.82,72.45 670.67,43.24 791.83,-303.02 97.63,-278.78 -4.86,-439.58 -206.26,-544.44 146.69,-33.83 257.18,-130.31 286.64,-329.61l-0.07 -0.05zm-512.93 719.26c-69.38,278.78 -538.76,128.08 -690.94,90.29l123.28 -494.2c152.17,37.99 640.17,113.17 567.67,403.91zm69.43 -723.3c-63.29,253.58 -453.96,124.75 -580.69,93.16l111.77 -448.21c126.73,31.59 534.85,90.55 468.94,355.05l-0.02 0z"></path>
+                  </g>
+                </g>
+              </svg>
+            </view>
           </view>
-          <view class="stat-pill">
-            <text>{{ holdings.length }} 支基金</text>
+          <text class="amount-title-text">总资产</text>
+          <!-- <view class="amount-percent" :class="stats.totalProfit >= 0 ? 'up' : 'down'">
+            <image class="percent-arrow" :src="stats.totalProfit >= 0 ? arrowUpSvg : arrowDownSvg" mode="aspectFit" />
+            <text>{{ formatPercent(stats.totalRate) }}</text>
+          </view> -->
+        </view>
+        <view class="amount-data">
+          <text class="amount-value">{{ formatMoney(stats.totalAmount) }}</text>
+          <view class="holding-count-badge">
+            <text class="holding-count-text">持有 {{ holdings.length }} 只基金</text>
           </view>
         </view>
       </view>
 
       <!-- 今日盈亏 -->
-      <view class="bento-card">
-        <text class="card-label">今日盈亏</text>
-        <text class="card-value" :class="stats.todayProfit >= 0 ? 'red' : 'green'">
-          {{ formatMoney(stats.todayProfit, true) }}
-        </text>
-        <view class="today-badge" :class="stats.todayProfit >= 0 ? 'up' : 'down'">
-          <text class="arrow">{{ stats.todayProfit >= 0 ? '↑' : '↓' }}</text>
-          <text>{{ formatPercent(stats.todayRate) }}</text>
+      <view class="bento-card today-profit-card">
+        <view class="bento-card__content">
+          <text class="card-label">今日盈亏</text>
+          <text class="card-value" :class="stats.todayProfit >= 0 ? 'red' : 'green'">
+            {{ formatMoney(stats.todayProfit, true) }}
+          </text>
+          <view class="today-badge" :class="stats.todayProfit >= 0 ? 'up' : 'down'">
+            <image class="arrow-svg" :src="stats.todayProfit >= 0 ? arrowUpSvg : arrowDownSvg" mode="aspectFit" />
+            <text>{{ formatPercent(stats.todayRate) }}</text>
+          </view>
         </view>
+        <view class="blob blob1"></view>
+        <view class="blob blob2"></view>
+        <view class="blob blob3"></view>
+        <view class="blob blob4"></view>
+        <!-- #ifdef H5 -->
+        <view id="stock-lottie-canvas" class="stock-lottie-canvas"></view>
+        <!-- #endif -->
+        <!-- #ifdef MP-WEIXIN -->
+        <canvas id="stock-lottie-canvas" type="2d" class="stock-lottie-canvas"></canvas>
+        <!-- #endif -->
       </view>
 
-      <!-- 持有金额 -->
-      <view class="bento-card">
-        <text class="card-label">持有金额</text>
-        <text class="card-value">{{ formatMoney(stats.totalAmount) }}</text>
-        <text class="card-sub">总资产</text>
+      <!-- 累计收益 -->
+      <view class="bento-card total-profit-card">
+        <view class="metal-card-top">
+          <view class="metal-card-metal"></view>
+          <view class="metal-card-plastic"></view>
+        </view>
+        <view class="metal-card-bottom">
+          <view class="metal-card-yellow"></view>
+          <view class="metal-card-content">
+            <text class="metal-card-label">累计收益</text>
+            <text class="metal-card-value" :class="stats.totalProfit >= 0 ? 'red' : 'green'">
+              {{ formatMoney(stats.totalProfit, true) }}
+            </text>
+            <view class="metal-card-badge" :class="stats.totalProfit >= 0 ? 'up' : 'down'">
+              <image class="metal-card-arrow" :src="stats.totalProfit >= 0 ? arrowUpSvg : arrowDownSvg" mode="aspectFit" />
+              <text>{{ formatPercent(stats.totalRate) }}</text>
+            </view>
+          </view>
+        </view>
+        <view class="metal-card-minicuadro1"></view>
+        <view class="metal-card-minicuadro2"></view>
+      </view>
+      </view>
+    </view>
+
+    <!-- Tab 切换 -->
+    <view class="tab-switcher" :class="{ 'tab-switcher-up': currentTab === 'watchlist' }">
+      <view class="tab-item" :class="{ active: currentTab === 'holdings' }" @tap="switchTab('holdings')">
+        <text class="tab-text">我的持仓</text>
+        <view class="tab-indicator" v-if="currentTab === 'holdings'"></view>
+      </view>
+      <view class="tab-item" :class="{ active: currentTab === 'watchlist' }" @tap="switchTab('watchlist')">
+        <text class="tab-text">自选</text>
+        <view class="tab-indicator" v-if="currentTab === 'watchlist'"></view>
       </view>
     </view>
 
     <!-- 持仓列表 -->
-    <view class="section-header">
+    <view class="section-header" v-show="currentTab === 'holdings'">
       <text class="section-title">我的持仓</text>
       <view class="sort-control">
         <picker mode="selector" :range="sortOptions" range-key="label" @change="onSortTypeChange">
@@ -70,7 +145,7 @@
       </view>
     </view>
 
-    <view class="holding-list">
+    <view class="holding-list" v-show="currentTab === 'holdings'">
       <view 
         class="holding-card" 
         v-for="item in holdings" 
@@ -113,16 +188,6 @@
                 {{ item.estimateTimeDesc }}
               </text>
             </view>
-            <!-- 心跳节奏 - AI估值 -->
-            <view class="heartbeat-row" v-if="getHeartbeat(item.id)">
-              <text class="heartbeat-icon">💓</text>
-              <text class="heartbeat-value" :class="getHeartbeat(item.id).rate >= 0 ? 'red' : 'green'">
-                {{ formatHeartbeatProfit(getHeartbeat(item.id).todayProfit) }}
-              </text>
-              <text class="heartbeat-rate" :class="getHeartbeat(item.id).rate >= 0 ? 'red' : 'green'">
-                ({{ getHeartbeat(item.id).rate >= 0 ? '+' : '' }}{{ getHeartbeat(item.id).rate }}%)
-              </text>
-            </view>
           </view>
         </view>
         <view class="holding-actions">
@@ -146,9 +211,110 @@
       </view>
     </view>
 
+    <!-- 自选列表 -->
+    <view class="watchlist-section" v-show="currentTab === 'watchlist'">
+      <view class="section-header">
+        <text class="section-title">自选基金</text>
+        <text class="section-count">{{ watchlist.length }} 支</text>
+      </view>
+      
+      <view class="watchlist-container">
+        <view 
+          class="watch-card" 
+          v-for="item in watchlistWithEstimate" 
+          :key="item.id"
+          @tap="goDetail(item)"
+        >
+          <view class="watch-main">
+            <view class="watch-info">
+              <text class="watch-name">{{ item.fundName || '未命名基金' }}</text>
+              <view class="watch-meta">
+                <text class="watch-code">{{ item.fundCode }}</text>
+                <text class="watch-sector" v-if="item.sectors && item.sectors.length > 0">{{ item.sectors[0] }}</text>
+              </view>
+            </view>
+            <view class="watch-estimate">
+              <text class="watch-rate" :class="item.todayRate >= 0 ? 'red' : 'green'">
+                {{ formatTodayRate(item.todayRate) }}
+              </text>
+            </view>
+          </view>
+          <view class="watch-actions">
+            <view class="watch-action-btn" @tap.stop="removeFromWatchlistAction(item)">
+              <text class="watch-action-text">移除</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 自选空状态 -->
+        <view class="empty-state" v-if="watchlist.length === 0">
+          <view class="empty-icon">⭐</view>
+          <text class="empty-text">还没有自选基金</text>
+          <text class="empty-hint">在添加基金时可选择加入自选</text>
+        </view>
+      </view>
+    </view>
+
     <!-- 添加按钮 FAB -->
-    <view class="fab" @tap="goAdd">
+    <view class="fab" @tap="handleFabClick">
       <image class="fab-icon-svg" src="data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M526.507431 109.121602c-231.868047 0-419.788888 187.920841-419.788887 419.788888s187.920841 419.788888 419.788887 419.788888 419.788888-187.920841 419.788888-419.788888S758.375478 109.121602 526.507431 109.121602zM778.381173 545.702209H543.29915v233.967012h-33.583438V545.702209H275.7487v-33.583438h233.967012V277.036748h33.583438v235.082023H778.381173v33.583438z' fill='%2398C4D8'/%3E%3Cpath d='M492.923993 75.538164c-231.868047 0-419.788888 187.920841-419.788888 419.788887s187.920841 419.788888 419.788888 419.788888 419.788888-187.920841 419.788887-419.788888S724.792039 75.538164 492.923993 75.538164zM744.797735 512.118771H509.715712v233.967011h-33.583439V512.118771H242.166285v-33.583439h233.967012V243.453309h33.583439v235.082023H744.797735v33.583439z' fill='%23EFD9A0'/%3E%3Cpath d='M268.480057 288.159806a30.213832 64.203753 55.515 1 0 105.843026-72.703105 30.213832 64.203753 55.515 1 0-105.843026 72.703105Z' fill='%23FEFEFE'/%3E%3Cpath d='M203.600369 393.818901a20.142896 35.2493 55.515 1 0 58.110194-39.915635 20.142896 35.2493 55.515 1 0-58.110194 39.915635Z' fill='%23FEFEFE'/%3E%3C/svg%3E" mode="aspectFit" />
+    </view>
+
+    <!-- 添加自选弹窗 -->
+    <view class="modal-mask" v-if="showAddWatchModal" @tap="closeAddWatchModal">
+      <view class="modal-container add-watch-modal" @tap.stop>
+        <!-- 右上角缺口 -->
+        <view class="add-watch-corner">
+          <view class="corner-notch corner-tl"></view>
+          <view class="corner-notch corner-br"></view>
+          <view class="add-watch-close" @tap="closeAddWatchModal">
+            <image class="close-icon-svg" src="data:image/svg+xml,%3Csvg%20height%3D%22200px%22%20width%3D%22200px%22%20version%3D%221.1%22%20id%3D%22Layer_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%20502%20502%22%20xml%3Aspace%3D%22preserve%22%20fill%3D%22%23000000%22%3E%3Cg%20id%3D%22SVGRepo_bgCarrier%22%20stroke-width%3D%220%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_tracerCarrier%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_iconCarrier%22%3E%20%3Cg%3E%20%3Cg%3E%20%3Ccircle%20style%3D%22fill%3A%23dc704c%3B%22%20cx%3D%22251%22%20cy%3D%22251%22%20r%3D%22241%22%3E%3C%2Fcircle%3E%20%3Cpath%20d%3D%22M251%2C502c-67.045%2C0-130.076-26.108-177.483-73.517C26.108%2C381.076%2C0%2C318.045%2C0%2C251S26.108%2C120.924%2C73.517%2C73.517%20C120.924%2C26.108%2C183.955%2C0%2C251%2C0s130.076%2C26.108%2C177.483%2C73.517C475.892%2C120.924%2C502%2C183.955%2C502%2C251%20s-26.108%2C130.076-73.517%2C177.483C381.076%2C475.892%2C318.045%2C502%2C251%2C502z%20M251%2C20C123.626%2C20%2C20%2C123.626%2C20%2C251s103.626%2C231%2C231%2C231%20s231-103.626%2C231-231S378.374%2C20%2C251%2C20z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3Cg%3E%20%3Cpath%20style%3D%22fill%3A%23D1DCEB%3B%22%20d%3D%22M281.291%2C249l76.729-76.729c8.641-8.641%2C8.641-22.651%2C0-31.291c-8.641-8.641-22.651-8.641-31.291%2C0%20L250%2C217.709l-76.729-76.729c-8.641-8.641-22.651-8.641-31.291%2C0c-8.641%2C8.641-8.641%2C22.651%2C0%2C31.291L218.709%2C249l-76.729%2C76.729%20c-8.641%2C8.641-8.641%2C22.651%2C0%2C31.291c4.32%2C4.32%2C9.984%2C6.48%2C15.646%2C6.48s11.325-2.16%2C15.646-6.48L250%2C280.291l76.729%2C76.729%20c4.32%2C4.32%2C9.984%2C6.48%2C15.646%2C6.48s11.325-2.16%2C15.646-6.48c8.641-8.641%2C8.641-22.651%2C0-31.291L281.291%2C249z%22%3E%3C%2Fpath%3E%20%3Cpath%20d%3D%22M342.374%2C373.5c-8.582%2C0-16.649-3.341-22.717-9.408L250%2C294.434l-69.657%2C69.658c-6.067%2C6.067-14.135%2C9.408-22.717%2C9.408%20c-8.581%2C0-16.648-3.341-22.717-9.407c-12.527-12.527-12.527-32.909-0.001-45.436L204.566%2C249l-69.658-69.657%20c-12.525-12.526-12.525-32.907%2C0-45.434c6.068-6.068%2C14.137-9.41%2C22.718-9.41s16.649%2C3.343%2C22.717%2C9.411L250%2C203.566%20l69.657-69.657c6.067-6.067%2C14.136-9.41%2C22.717-9.41s16.649%2C3.342%2C22.718%2C9.41c12.525%2C12.526%2C12.525%2C32.907%2C0%2C45.434L295.434%2C249%20l69.658%2C69.657c12.526%2C12.526%2C12.526%2C32.908%2C0%2C45.435C359.022%2C370.159%2C350.955%2C373.5%2C342.374%2C373.5z%20M250%2C270.291%20c2.652%2C0%2C5.195%2C1.054%2C7.071%2C2.929l76.729%2C76.729c2.289%2C2.29%2C5.335%2C3.551%2C8.574%2C3.551c3.24%2C0%2C6.285-1.262%2C8.576-3.552%20c4.728-4.728%2C4.728-12.421-0.001-17.148l-76.729-76.729c-1.875-1.876-2.929-4.419-2.929-7.071s1.054-5.195%2C2.929-7.071%20l76.729-76.729c4.729-4.728%2C4.729-12.421%2C0-17.148c-2.29-2.291-5.336-3.553-8.575-3.553s-6.284%2C1.262-8.574%2C3.552l-76.729%2C76.729%20c-3.906%2C3.904-10.236%2C3.904-14.143%2C0L166.2%2C148.052c-2.29-2.291-5.335-3.553-8.574-3.553s-6.285%2C1.262-8.575%2C3.553%20c-4.729%2C4.728-4.729%2C12.421%2C0%2C17.148l76.729%2C76.729c1.875%2C1.876%2C2.929%2C4.419%2C2.929%2C7.071s-1.054%2C5.195-2.929%2C7.071L149.051%2C332.8%20c-4.729%2C4.728-4.729%2C12.421%2C0%2C17.149c2.29%2C2.289%2C5.335%2C3.551%2C8.575%2C3.551c3.239%2C0%2C6.285-1.261%2C8.574-3.551l76.729-76.729%20C244.805%2C271.345%2C247.348%2C270.291%2C250%2C270.291z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3Cg%3E%20%3Cpath%20d%3D%22M50%2C261c-5.522%2C0-10-4.478-10-10c0-39.687%2C11.081-78.358%2C32.045-111.836c20.387-32.557%2C49.233-58.957%2C83.422-76.346%20c4.92-2.506%2C10.942-0.544%2C13.446%2C4.38c2.504%2C4.922%2C0.543%2C10.942-4.38%2C13.446C100.055%2C113.44%2C60%2C178.717%2C60%2C251%20C60%2C256.522%2C55.522%2C261%2C50%2C261z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3Cg%3E%20%3Cpath%20d%3D%22M209.99%2C64.187c-4.641%2C0-8.802-3.249-9.781-7.973c-1.121-5.408%2C2.354-10.7%2C7.763-11.821C222.036%2C41.478%2C236.513%2C40%2C251%2C40%20c5.522%2C0%2C10%2C4.478%2C10%2C10s-4.478%2C10-10%2C10c-13.127%2C0-26.238%2C1.338-38.97%2C3.977C211.346%2C64.118%2C210.663%2C64.187%2C209.99%2C64.187z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3C%2Fg%3E%20%3C%2Fg%3E%3C%2Fsvg%3E" mode="aspectFit" />
+          </view>
+        </view>
+        <view class="add-watch-header">
+          <text class="add-watch-title">添加自选基金</text>
+        </view>
+        
+        <view class="add-watch-body">
+          <view class="add-watch-input-wrap">
+            <input 
+              class="add-watch-input" 
+              v-model="watchSearchKeyword" 
+              placeholder="输入基金代码或名称" 
+              placeholder-class="input-placeholder"
+              @input="onWatchSearchInput"
+            />
+          </view>
+          
+          <!-- 搜索结果列表 -->
+          <scroll-view class="watch-search-list" scroll-y v-if="watchSearchResults.length > 0">
+            <view 
+              class="search-result-item" 
+              v-for="item in watchSearchResults" 
+              :key="item.code"
+              @tap="selectWatchFund(item)"
+            >
+              <view class="result-main">
+                <text class="result-name">{{ item.name }}</text>
+                <text class="result-code">{{ item.code }}</text>
+              </view>
+              <view class="result-action">
+                <image class="result-action-icon" src="data:image/svg+xml,%3Csvg%20height%3D%22200px%22%20width%3D%22200px%22%20version%3D%221.1%22%20id%3D%22Layer_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%20511.998%20511.998%22%20xml%3Aspace%3D%22preserve%22%20fill%3D%22%23000000%22%3E%3Cg%20id%3D%22SVGRepo_bgCarrier%22%20stroke-width%3D%220%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_tracerCarrier%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_iconCarrier%22%3E%20%3Ccircle%20style%3D%22fill%3A%23fe8671%3B%22%20cx%3D%22256.002%22%20cy%3D%22256.001%22%20r%3D%22247.612%22%3E%3C%2Fcircle%3E%20%3Cpath%20style%3D%22opacity%3A0.1%3Benable-background%3Anew%20%3B%22%20d%3D%22M64.319%2C255.998c0-127.294%2C96.063-232.134%2C219.645-246.028%20c-9.181-1.032-18.508-1.582-27.965-1.582c-136.75%2C0-247.61%2C110.859-247.61%2C247.61s110.858%2C247.61%2C247.61%2C247.61%20c9.457%2C0%2C18.783-0.549%2C27.965-1.582C160.382%2C488.134%2C64.319%2C383.293%2C64.319%2C255.998z%22%3E%3C%2Fpath%3E%20%3Cpolygon%20style%3D%22fill%3A%23FFFFFF%3B%22%20points%3D%22404.963%2C211.407%20300.592%2C211.407%20300.592%2C107.035%20211.408%2C107.035%20211.408%2C211.407%20107.037%2C211.407%20107.037%2C300.591%20211.408%2C300.591%20211.408%2C404.963%20300.592%2C404.963%20300.592%2C300.591%20404.963%2C300.591%20%22%3E%3C%2Fpolygon%3E%20%3Cpath%20d%3D%22M255.999%2C511.998c-68.381%2C0-132.668-26.629-181.019-74.979C26.629%2C388.666%2C0%2C324.378%2C0%2C255.998%20c0-36.75%2C7.624-72.228%2C22.662-105.45c14.525-32.09%2C35.169-60.412%2C61.359-84.178c3.432-3.114%2C8.738-2.857%2C11.85%2C0.575%20c3.114%2C3.431%2C2.857%2C8.737-0.575%2C11.85c-49.898%2C45.282-78.518%2C109.868-78.518%2C177.202c0%2C63.899%2C24.883%2C123.972%2C70.067%2C169.155%20c45.183%2C45.182%2C105.256%2C70.065%2C169.155%2C70.065c54.064%2C0%2C105.073-17.594%2C147.511-50.884c3.647-2.86%2C8.921-2.22%2C11.779%2C1.423%20c2.86%2C3.645%2C2.221%2C8.92-1.423%2C11.779C368.445%2C493.165%2C313.855%2C511.998%2C255.999%2C511.998z%22%3E%3C%2Fpath%3E%20%3Cpath%20d%3D%22M116.4%2C59.876c-2.677%2C0-5.306-1.279-6.931-3.653c-2.604-3.807-1.648-8.997%2C2.133-11.626%20c3.719-2.64%2C8.887-1.822%2C11.607%2C1.867c2.748%2C3.731%2C1.952%2C8.982-1.777%2C11.731c-0.078%2C0.058-0.22%2C0.159-0.302%2C0.213%20C119.681%2C59.401%2C118.032%2C59.876%2C116.4%2C59.876z%22%3E%3C%2Fpath%3E%20%3Cpath%20d%3D%22M433.487%2C437.015c-2.109%2C0-4.218-0.79-5.849-2.376c-3.321-3.232-3.395-8.543-0.163-11.863%20c43.687-44.908%2C67.745-104.138%2C67.745-166.777c0-63.898-24.883-123.971-70.067-169.154S319.897%2C16.779%2C255.998%2C16.779%20c-48.378%2C0-94.988%2C14.377-134.79%2C41.575c-3.827%2C2.612-9.045%2C1.631-11.66-2.194c-2.614-3.826-1.632-9.046%2C2.194-11.66%20C154.345%2C15.389%2C204.228%2C0%2C255.998%2C0c68.38%2C0%2C132.668%2C26.629%2C181.019%2C74.981s74.981%2C112.638%2C74.981%2C181.018%20c0%2C67.034-25.748%2C130.418-72.498%2C178.476C437.857%2C436.166%2C435.673%2C437.015%2C433.487%2C437.015z%22%3E%3C%2Fpath%3E%20%3Cpath%20d%3D%22M300.592%2C413.351h-89.184c-4.634%2C0-8.389-3.755-8.389-8.389v-95.982h-95.982c-4.634%2C0-8.389-3.755-8.389-8.389v-89.184%20c0-4.634%2C3.755-8.389%2C8.389-8.389h95.982v-95.981c0-4.634%2C3.755-8.389%2C8.389-8.389h89.184c4.634%2C0%2C8.389%2C3.755%2C8.389%2C8.389v95.982%20h95.982c4.634%2C0%2C8.389%2C3.755%2C8.389%2C8.389v89.184c0%2C4.634-3.755%2C8.389-8.389%2C8.389h-95.982v95.982%20C308.982%2C409.596%2C305.225%2C413.351%2C300.592%2C413.351z%20M219.797%2C396.572h72.406V300.59c0-4.634%2C3.755-8.389%2C8.389-8.389h95.982v-72.406%20h-95.982c-4.634%2C0-8.389-3.755-8.389-8.389v-95.982h-72.406v95.982c0%2C4.634-3.755%2C8.389-8.389%2C8.389h-95.982v72.406h95.982%20c4.634%2C0%2C8.389%2C3.755%2C8.389%2C8.389L219.797%2C396.572L219.797%2C396.572z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%3C%2Fsvg%3E" mode="aspectFit" />
+              </view>
+            </view>
+          </scroll-view>
+          
+          <!-- 搜索中 -->
+          <view class="watch-search-loading" v-if="watchSearchLoading">
+            <text class="loading-text">搜索中...</text>
+          </view>
+          
+          <!-- 无结果 -->
+          <view class="watch-search-empty" v-if="watchSearchEmpty">
+            <text class="empty-text">未找到相关基金</text>
+          </view>
+        </view>
+      </view>
     </view>
 
     <!-- 底部导航占位 -->
@@ -177,14 +343,16 @@
 </template>
 
 <script>
-import { getHoldings, calculateStats, formatMoney, formatPercent, deleteHolding } from '@/utils/storage.js'
-import { getFundEstimates, getFundSectorsBatch } from '@/utils/api.js'
+import { getHoldings, calculateStats, formatMoney, formatPercent, deleteHolding, getWatchlist, removeFromWatchlist, addToWatchlist, isInWatchlist, saveWatchlist } from '@/utils/storage.js'
+import { getFundEstimates, getFundSectorsBatch, getFundDetail, searchFund } from '@/utils/api.js'
 import { generateDailyReport, generateProfitAlert, getNotificationSettings } from '@/utils/notification.js'
-import { calculateAllHeartbeats } from '@/utils/heartbeat.js'
 
 export default {
   data() {
     return {
+      currentTab: 'holdings',
+      watchlist: [],
+      watchlistEstimates: {},
       holdings: [],
       stats: {
         totalAmount: 0,
@@ -193,16 +361,23 @@ export default {
         todayProfit: 0,
         todayRate: 0
       },
-      heartbeats: {},
-      heartbeatLoading: false,
       showDeleteModal: false,
+      showAddWatchModal: false,
+      watchSearchKeyword: '',
+      watchSearchResults: [],
+      watchSearchLoading: false,
+      watchSearchEmpty: false,
+      searchTimer: null,
       deleteTarget: null,
       sortOrder: 'down',
       sortType: 'total',
       sortOptions: [
         { value: 'total', label: '总涨跌幅' },
         { value: 'today', label: '今日涨跌幅' }
-      ]
+      ],
+      // 箭头 SVG
+      arrowUpSvg: 'data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20transform%3D%22matrix%281%2C%200%2C%200%2C%20-1%2C%200%2C%200%29%22%3E%3Cg%20id%3D%22SVGRepo_bgCarrier%22%20stroke-width%3D%220%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_tracerCarrier%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_iconCarrier%22%3E%20%3Cg%20clip-path%3D%22url%28%23clip0_1076_36063%29%22%3E%20%3Cpath%20d%3D%22M12.4393%207.43933L8.49996%2011.3787L2.76773%205.64644C2.3772%205.25592%201.74404%205.25592%201.35352%205.64644L0.646409%206.35355C0.255885%206.74407%200.255885%207.37724%200.646409%207.76776L7.4393%2014.5607C8.02509%2015.1464%208.97484%2015.1464%209.56062%2014.5607L13.5%2010.6213L18.2322%2015.3535L16.2928%2017.2929C16.0068%2017.5789%2015.9212%2018.009%2016.076%2018.3827C16.2308%2018.7564%2016.5954%2019%2016.9999%2019H22.9999C23.5522%2019%2023.9999%2018.5523%2023.9999%2018V12C23.9999%2011.5955%2023.7562%2011.2309%2023.3826%2011.0761C23.0089%2010.9213%2022.5788%2011.0069%2022.2928%2011.2929L20.3535%2013.2322L14.5606%207.43933C13.9748%206.85355%2013.0251%206.85355%2012.4393%207.43933Z%22%20fill%3D%22%23cf203b%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3Cdefs%3E%20%3CclipPath%20id%3D%22clip0_1076_36063%22%3E%20%3Crect%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22white%22%3E%3C%2Frect%3E%20%3C%2FclipPath%3E%20%3C%2Fdefs%3E%20%3C%2Fg%3E%3C%2Fsvg%3E',
+      arrowDownSvg: 'data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20id%3D%22SVGRepo_bgCarrier%22%20stroke-width%3D%220%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_tracerCarrier%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_iconCarrier%22%3E%20%3Cg%20clip-path%3D%22url(%23clip0_1076_36063)%22%3E%20%3Cpath%20d%3D%22M12.4393%207.43933L8.49996%2011.3787L2.76773%205.64644C2.3772%205.25592%201.74404%205.25592%201.35352%205.64644L0.646409%206.35355C0.255885%206.74407%200.255885%207.37724%200.646409%207.76776L7.4393%2014.5607C8.02509%2015.1464%208.97484%2015.1464%209.56062%2014.5607L13.5%2010.6213L18.2322%2015.3535L16.2928%2017.2929C16.0068%2017.5789%2015.9212%2018.009%2016.076%2018.3827C16.2308%2018.7564%2016.5954%2019%2016.9999%2019H22.9999C23.5522%2019%2023.9999%2018.5523%2023.9999%2018V12C23.9999%2011.5955%2023.7562%2011.2309%2023.3826%2011.0761C23.0089%2010.9213%2022.5788%2011.0069%2022.2928%2011.2929L20.3535%2013.2322L14.5606%207.43933C13.9748%206.85355%2013.0251%206.85355%2012.4393%207.43933Z%22%20fill%3D%22%2316a34a%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3Cdefs%3E%20%3CclipPath%20id%3D%22clip0_1076_36063%22%3E%20%3Crect%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22white%22%3E%3C%2Frect%3E%20%3C%2FclipPath%3E%20%3C%2Fdefs%3E%20%3C%2Fg%3E%3C%2Fsvg%3E'
     }
   },
   computed: {
@@ -215,17 +390,164 @@ export default {
     currentSortLabel() {
       const option = this.sortOptions.find(o => o.value === this.sortType)
       return option ? option.label : '总涨跌幅'
+    },
+    watchlistWithEstimate() {
+      return this.watchlist.map(item => ({
+        ...item,
+        todayRate: this.watchlistEstimates[item.fundCode]?.todayRate || 0,
+        todayProfit: this.watchlistEstimates[item.fundCode]?.todayProfit || 0
+      }))
     }
   },
   onShow() {
     this.loadData()
+    // #ifdef H5
+    // 禁用H5页面滚动
+    document.body.style.overflow = 'hidden'
+    document.documentElement.style.overflow = 'hidden'
+    // #endif
+  },
+  onReady() {
+    this.initLottie()
+  },
+  onHide() {
+    // #ifdef H5
+    // 恢复滚动
+    document.body.style.overflow = ''
+    document.documentElement.style.overflow = ''
+    // #endif
   },
   onPullDownRefresh() {
     this.refreshAll()
   },
   methods: {
+    initLottie() {
+      // #ifdef H5
+      // H5环境使用lottie-web
+      import('lottie-web').then(lottie => {
+        fetch('/static/icons/piggy-saving.json')
+          .then(res => res.json())
+          .then(animationData => {
+            lottie.default.loadAnimation({
+              container: document.getElementById('lottie-canvas'),
+              renderer: 'svg',
+              loop: true,
+              autoplay: true,
+              animationData: animationData
+            })
+          })
+          .catch(err => {
+            console.error('加载lottie动画失败:', err)
+          })
+      })
+      // #endif
+      
+      // #ifdef MP-WEIXIN
+      const query = uni.createSelectorQuery().in(this)
+      query.select('#lottie-canvas')
+        .fields({ node: true, size: true })
+        .exec((res) => {
+          if (res && res[0]) {
+            const canvas = res[0].node
+            const ctx = canvas.getContext('2d')
+            
+            const dpr = 3  // 提高清晰度
+            canvas.width = 120 * dpr
+            canvas.height = 120 * dpr
+            ctx.scale(dpr, dpr)
+            
+            // 加载lottie动画数据
+            uni.request({
+              url: '/static/icons/piggy-saving.json',
+              success: (response) => {
+                const lottie = require('lottie-miniprogram')
+                lottie.loadAnimation({
+                  loop: true,
+                  autoplay: true,
+                  animationData: response.data,
+                  rendererSettings: {
+                    context: ctx,
+                    canvas: canvas,
+                    clearCanvas: true
+                  }
+                })
+              },
+              fail: (err) => {
+                console.error('加载lottie动画失败:', err)
+              }
+            })
+          }
+        })
+      // #endif
+      
+      // 初始化stock.json动画
+      // #ifdef H5
+      import('lottie-web').then(lottie => {
+        fetch('/static/icons/stock.json')
+          .then(res => res.json())
+          .then(animationData => {
+            lottie.default.loadAnimation({
+              container: document.getElementById('stock-lottie-canvas'),
+              renderer: 'svg',
+              loop: true,
+              autoplay: true,
+              animationData: animationData
+            })
+          })
+          .catch(err => {
+            console.error('加载stock动画失败:', err)
+          })
+      })
+      // #endif
+      
+      // #ifdef MP-WEIXIN
+      const stockQuery = uni.createSelectorQuery().in(this)
+      stockQuery.select('#stock-lottie-canvas')
+        .fields({ node: true, size: true })
+        .exec((res) => {
+          if (res && res[0]) {
+            const canvas = res[0].node
+            const ctx = canvas.getContext('2d')
+            
+            const dpr = 3
+            canvas.width = 80 * dpr
+            canvas.height = 80 * dpr
+            ctx.scale(dpr, dpr)
+            
+            uni.request({
+              url: '/static/icons/stock.json',
+              success: (response) => {
+                const lottie = require('lottie-miniprogram')
+                lottie.loadAnimation({
+                  loop: true,
+                  autoplay: true,
+                  animationData: response.data,
+                  rendererSettings: {
+                    context: ctx,
+                    canvas: canvas,
+                    clearCanvas: true
+                  }
+                })
+              },
+              fail: (err) => {
+                console.error('加载stock动画失败:', err)
+              }
+            })
+          }
+        })
+      // #endif
+    },
+    
+    switchTab(tab) {
+      this.currentTab = tab
+      if (tab === 'watchlist' && this.watchlist.length > 0) {
+        this.refreshWatchlistEstimates()
+      }
+    },
+    
     async loadData() {
       this.holdings = getHoldings()
+      this.watchlist = getWatchlist()
       this.calculateTotalStats()
       
       if (this.holdings.length > 0) {
@@ -240,7 +562,6 @@ export default {
     async refreshAll() {
       await Promise.all([
         this.refreshEstimates(),
-        this.refreshHeartbeats(),
         this.refreshFundSectors()
       ])
       uni.stopPullDownRefresh()
@@ -297,30 +618,6 @@ export default {
       } catch (e) {
         console.error('刷新估值失败:', e)
       }
-    },
-    
-    async refreshHeartbeats() {
-      this.heartbeatLoading = true
-      
-      // 准备基金列表
-      const fundList = this.holdings.map(h => ({
-        id: h.id,
-        fundCode: h.fundCode,
-        fundName: h.fundName,
-        amount: parseFloat(h.amount) || 0
-      }))
-      
-      // 批量计算所有心跳（只请求一次股票接口）
-      const results = await calculateAllHeartbeats(fundList)
-      
-      // 更新心跳数据
-      this.heartbeats = results
-      
-      this.heartbeatLoading = false
-    },
-    
-    getHeartbeat(id) {
-      return this.heartbeats[id] || null
     },
     
     goAdd() {
@@ -418,14 +715,163 @@ export default {
       return `${num >= 0 ? '+' : ''}${num.toFixed(2)}%`
     },
     
-    formatHeartbeatProfit(value) {
-      if (value === null || value === undefined || isNaN(value)) return '--'
-      const num = parseFloat(value)
-      const formatted = Math.abs(num).toFixed(2)
-      if (num >= 0) {
-        return `+¥${formatted}`
+    async refreshWatchlistEstimates() {
+      if (this.watchlist.length === 0) return
+      
+      try {
+        const codes = this.watchlist.map(w => w.fundCode)
+        const estimates = await getFundEstimates(codes)
+        
+        estimates.forEach((est, index) => {
+          if (est && this.watchlist[index]) {
+            const rate = parseFloat(est.estimatedPercent) || 0
+            this.watchlistEstimates[this.watchlist[index].fundCode] = {
+              todayRate: rate,
+              todayProfit: 0
+            }
+          }
+        })
+      } catch (e) {
+        console.error('刷新自选估值失败:', e)
+      }
+    },
+    
+    removeFromWatchlistAction(item) {
+      uni.showModal({
+        title: '确认移除',
+        content: `确定要将「${item.fundName || '未命名基金'}」从自选中移除吗？`,
+        success: (res) => {
+          if (res.confirm) {
+            removeFromWatchlist(item.id)
+            this.watchlist = getWatchlist()
+            uni.showToast({
+              title: '已移除',
+              icon: 'success'
+            })
+          }
+        }
+      })
+    },
+    
+    handleFabClick() {
+      if (this.currentTab === 'watchlist') {
+        this.openAddWatchModal()
       } else {
-        return `-¥${formatted}`
+        this.goAdd()
+      }
+    },
+    
+    goAdd() {
+      uni.navigateTo({
+        url: '/pages/add/add'
+      })
+    },
+    
+    goDetail(item) {
+      const code = item.fundCode
+      uni.navigateTo({
+        url: `/pages/detail/detail?code=${code}`
+      })
+    },
+    
+    openAddWatchModal() {
+      this.showAddWatchModal = true
+      this.watchSearchCode = ''
+      this.watchSearchResult = null
+      this.watchSearchLoading = false
+      this.watchSearchEmpty = false
+    },
+    
+    closeAddWatchModal() {
+      this.showAddWatchModal = false
+      this.watchSearchCode = ''
+      this.watchSearchResult = null
+      this.watchSearchLoading = false
+      this.watchSearchEmpty = false
+    },
+    
+    onWatchSearchInput() {
+      if (this.searchTimer) {
+        clearTimeout(this.searchTimer)
+      }
+      this.searchTimer = setTimeout(() => {
+        this.searchFundForWatch()
+      }, 300)
+    },
+    
+    async searchFundForWatch() {
+      const keyword = this.watchSearchKeyword.trim()
+      if (!keyword || keyword.length < 2) {
+        this.watchSearchResults = []
+        this.watchSearchEmpty = false
+        return
+      }
+      
+      this.watchSearchLoading = true
+      this.watchSearchResults = []
+      this.watchSearchEmpty = false
+      
+      try {
+        const results = await searchFund(keyword)
+        if (results && results.length > 0) {
+          this.watchSearchResults = results.slice(0, 10).map(item => ({
+            code: item.fundCode || item.code,
+            name: item.fundName || item.name
+          }))
+        } else {
+          this.watchSearchEmpty = true
+        }
+      } catch (e) {
+        console.error('搜索基金失败:', e)
+        this.watchSearchEmpty = true
+      } finally {
+        this.watchSearchLoading = false
+      }
+    },
+    
+    async selectWatchFund(item) {
+      if (isInWatchlist(item.code)) {
+        uni.showToast({
+          title: '已在自选中',
+          icon: 'none'
+        })
+        return
+      }
+      
+      const fund = {
+        fundCode: item.code,
+        fundName: item.name,
+        sectors: []
+      }
+      
+      const success = addToWatchlist(fund)
+      if (success) {
+        this.watchlist = getWatchlist()
+        this.closeAddWatchModal()
+        uni.showToast({
+          title: '添加成功',
+          icon: 'success'
+        })
+        this.refreshWatchlistEstimates()
+        
+        getFundSectorsBatch([item.code]).then(sectors => {
+          if (sectors && sectors[item.code]) {
+            const watchlist = getWatchlist()
+            const target = watchlist.find(w => w.fundCode === item.code)
+            if (target) {
+              target.sectors = sectors[item.code]
+              saveWatchlist(watchlist)
+              this.watchlist = watchlist
+            }
+          }
+        }).catch(e => {
+          console.error('后台获取板块失败:', e)
+        })
+      } else {
+        uni.showToast({
+          title: '添加失败',
+          icon: 'none'
+        })
       }
     }
   }
@@ -434,12 +880,411 @@ export default {
 
 <style lang="scss" scoped>
 .page {
-  min-height: 100vh;
+  height: 100vh;
   padding: 32rpx;
-  // padding-bottom: 200rpx;
   position: relative;
-  overflow-x: hidden;
+  overflow: hidden;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  
+  // 禁用页面滚动
+  touch-action: none;
+  -webkit-overflow-scrolling: auto;
+}
+
+.tab-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 0;
+  margin-bottom: 24rpx;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-switcher-up {
+  // 不需要额外移动，统计卡片隐藏后自然会上移
+}
+
+.tab-item {
+  position: relative;
+  padding: 12rpx 40rpx;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  .tab-text {
+    font-size: 30rpx;
+    color: $text-tertiary;
+    font-weight: 500;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .tab-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40rpx;
+    height: 6rpx;
+    background: linear-gradient(135deg, $accent-terracotta, $accent-gold);
+    border-radius: 3rpx;
+    animation: tabIndicatorIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  &.active {
+    .tab-text {
+      font-size: 36rpx;
+      color: $text-primary;
+      font-weight: 700;
+    }
+  }
+  
+  &:not(.active) {
+    .tab-text {
+      font-size: 28rpx;
+    }
+  }
+}
+
+@keyframes tabIndicatorIn {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  100% {
+    width: 40rpx;
+    opacity: 1;
+  }
+}
+
+.watchlist-section {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.watchlist-container {
+  position: relative;
+}
+
+.watch-card {
+  background: $glass-bg;
+  border: 1px solid $border-card;
+  border-radius: $radius-lg;
+  backdrop-filter: $glass-blur;
+  -webkit-backdrop-filter: $glass-blur;
+  padding: 24rpx 28rpx;
+  margin-bottom: 16rpx;
+  box-shadow: $shadow-sm;
+  transition: all 0.2s ease;
+  
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.watch-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.watch-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.watch-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: $text-primary;
+  display: block;
+  margin-bottom: 8rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.watch-meta {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.watch-code {
+  font-size: 24rpx;
+  color: $text-tertiary;
+  font-family: 'SF Mono', 'Monaco', monospace;
+}
+
+.watch-sector {
+  font-size: 22rpx;
+  color: $text-tertiary;
+  background: rgba(180, 130, 70, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.watch-estimate {
+  text-align: right;
+}
+
+.watch-rate {
+  font-size: 36rpx;
+  font-weight: 700;
+  
+  &.red {
+    color: $up-color;
+  }
+  
+  &.green {
+    color: $down-color;
+  }
+}
+
+.watch-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1px solid rgba(180, 130, 70, 0.1);
+}
+
+.watch-action-btn {
+  padding: 8rpx 24rpx;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12rpx;
+  
+  .watch-action-text {
+    font-size: 24rpx;
+    color: #ef4444;
+  }
+}
+
+.section-count {
+  font-size: 26rpx;
+  color: $text-tertiary;
+}
+
+.add-watch-modal {
+  --gap-action: 12rpx;
+  --sz-action: 72rpx;
+  --round-card: calc(var(--sz-action) / 2 + calc(var(--gap-action) / 2));
+  
+  width: 600rpx;
+  border-radius: var(--round-card);
+  overflow: visible;
+  position: relative;
+  background: #fffcf5;
+  box-shadow: 0 10px 40px rgba(217, 119, 6, 0.15);
+}
+
+// 右上角缺口 - 参考新方案
+.add-watch-corner {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: auto;
+  right: 0;
+  top: 0;
+  background: rgba(230, 225, 210, 0.7);
+  z-index: 5;
+  border-bottom-left-radius: var(--round-card);
+  padding-bottom: var(--gap-action);
+  padding-left: var(--gap-action);
+  gap: var(--gap-action);
+}
+
+// 缺口圆角修饰
+.corner-notch {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  z-index: 6;
+  background: rgba(230, 225, 210, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.corner-notch::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-top-right-radius: var(--round-card);
+  background: #fffcf5;
+  z-index: -1;
+}
+
+// tl 位置修饰（缺口左上角，left为负值制造缺口）
+.corner-tl {
+  left: -50%;
+  top: 0;
+}
+
+// br 位置修饰（缺口下方右侧）
+.corner-br {
+  right: 0;
+  top: 100%;
+}
+
+.add-watch-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60rpx 36rpx 24rpx;
+  width: 100%;
+}
+
+.add-watch-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.add-watch-close {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  height: var(--sz-action);
+  width: var(--sz-action);
+  border: none;
+  outline: none;
+  background-color: #fffcf5;
+  box-shadow: 
+    rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0.07) 0px 1px 2px,
+    rgba(0, 0, 0, 0.07) 0px 2px 4px;
+  z-index: 10;
+
+  .close-icon-svg {
+    width: 44rpx;
+    height: 44rpx;
+  }
+}
+
+
+.add-watch-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 32rpx;
+}
+
+.add-watch-input {
+  width: 100%;
+  height: 88rpx;
+  background: rgba(255, 252, 247, 0.8);
+  border: 2rpx solid rgba(180, 130, 70, 0.15);
+  border-radius: $radius-lg;
+  padding: 0 28rpx;
+  font-size: 30rpx;
+  color: $text-primary;
+  box-sizing: border-box;
+  
+  .input-placeholder {
+    color: $text-tertiary;
+  }
+}
+
+.watch-search-result {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.watch-search-list {
+  height: 400rpx;
+  margin-top: 16rpx;
+}
+
+.search-result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 28rpx;
+  background: rgba(255, 252, 247, 0.6);
+  border: 1px solid rgba(180, 130, 70, 0.12);
+  border-radius: $radius-lg;
+  margin-bottom: 12rpx;
+  
+  &:active {
+    background: rgba(255, 252, 247, 0.8);
+    transform: scale(0.98);
+  }
+}
+
+.result-main {
+  flex: 1;
+  overflow: hidden;
+}
+
+.result-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: $text-primary;
+  display: block;
+  margin-bottom: 6rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-code {
+  font-size: 24rpx;
+  color: $text-tertiary;
+  font-family: 'SF Mono', 'Monaco', monospace;
+}
+
+.result-action {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .result-action-icon {
+    width: 48rpx;
+    height: 48rpx;
+  }
+
+  &:active {
+    opacity: 0.8;
+    transform: scale(0.95);
+  }
+}
+
+.watch-search-loading,
+.watch-search-empty {
+  padding: 40rpx 0;
+  text-align: center;
+  
+  .loading-text,
+  .empty-text {
+    font-size: 28rpx;
+    color: $text-tertiary;
+  }
 }
 
 .bg-grid {
@@ -495,12 +1340,24 @@ export default {
   margin-bottom: 40rpx;
   position: relative;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .header-left {
   display: flex;
   flex-direction: column;
   gap: 8rpx;
+}
+
+.header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.header-icon {
+  width: 56rpx;
+  height: 56rpx;
 }
 
 .header-title {
@@ -534,6 +1391,18 @@ export default {
   }
 }
 
+.bento-grid-wrapper {
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 740rpx;
+  padding: 0 30rpx 0 0;
+  margin-right: -30rpx;
+}
+
+.bento-grid-collapsed {
+  max-height: 0;
+}
+
 .bento-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -541,6 +1410,149 @@ export default {
   margin-bottom: 40rpx;
   position: relative;
   z-index: 10;
+  flex-shrink: 0;
+}
+
+// 持有金额卡片 - 新样式
+.amount-card {
+  grid-column: span 2;
+  padding: 32rpx;
+  background: linear-gradient(135deg, rgba(254, 243, 199, .7), rgba(253, 230, 138, .5), rgba(252, 211, 77, .3));
+  border-radius: 40rpx;
+  box-shadow: 20rpx 20rpx 0 #323232;
+  border: 6rpx solid #323232;
+  box-sizing: border-box;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+
+.lottie-canvas {
+  position: absolute;
+  top: 15rpx;
+  right: 15rpx;
+  width: 280rpx;
+  height: 280rpx;
+}
+
+.amount-title {
+  display: flex;
+  align-items: center;
+}
+
+// 3D旋转硬币动画 - From Uiverse.io by JohnnyCSilva
+.coin {
+  font-size: 48rpx;
+  width: 0.1em;
+  height: 1em;
+  background: linear-gradient(#faa504, #141001);
+  position: relative;
+  animation: rotate_4001510 7s infinite linear;
+  transform-style: preserve-3d;
+}
+
+.coin .side, .coin:before, .coin:after {
+  content: "";
+  position: absolute;
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  border-radius: 50%;
+  right: -0.4em;
+  text-align: center;
+  line-height: 1;
+  transform: rotateY(-90deg);
+  -moz-backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.coin .tails, .coin:after {
+  left: -0.4em;
+  transform: rotateY(90deg);
+}
+
+.coin:before, .coin:after {
+  background: linear-gradient(#faa504, #141001);
+  backface-visibility: hidden;
+  transform: rotateY(90deg);
+}
+
+.coin:after {
+  transform: rotateY(-90deg);
+}
+
+@keyframes rotate_4001510 {
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+.svg_back {
+  transform: scaleX(-1);
+}
+
+.amount-title-text {
+  margin-left: 25rpx;
+  color: #374151;
+  font-size: 32rpx;
+}
+
+.amount-percent {
+  margin-left: 16rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  
+  &.up {
+    color: #dc2626;
+  }
+  
+  &.down {
+    color: #16a34a;
+  }
+}
+
+.percent-arrow {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+.amount-data {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.amount-value {
+  margin-top: 24rpx;
+  margin-bottom: 16rpx;
+  color: #1F2937;
+  font-size: 56rpx;
+  line-height: 1.2;
+  font-weight: 700;
+  text-align: left;
+}
+
+.holding-count-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 10rpx 20rpx;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(180, 130, 70, 0.15);
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+  margin-bottom: 16rpx;
+  align-self: flex-start;
+}
+
+.holding-count-text {
+  font-size: 24rpx;
+  color: #6B7280;
+  font-weight: 500;
+  letter-spacing: 0.5rpx;
 }
 
 .bento-card {
@@ -565,9 +1577,232 @@ export default {
   }
 }
 
+// 今日盈亏卡片特殊样式
+.today-profit-card {
+  height: 340rpx;
+  min-height: 340rpx;
+  
+  .bento-card__content {
+    background: linear-gradient(
+      rgba(255, 255, 255, 0.5),
+      rgba(200, 200, 200, 0.3)
+    );
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: $radius-lg;
+    padding: 28rpx;
+    box-sizing: border-box;
+    // display: flex;
+    // flex-direction: column;
+    z-index: 1;
+  }
+}
+
+.blob {
+  position: absolute;
+  z-index: 0;
+  border-radius: 5em;
+  width: 200rpx;
+  height: 200rpx;
+  opacity: 0.6;
+  filter: blur(60rpx);
+}
+
+.stock-lottie-canvas {
+  position: absolute;
+  bottom: 0rpx;
+  right: 8rpx;
+  left: -8rpx;
+  width: 350rpx;
+  height: 140rpx;
+  z-index: 10;
+}
+
+.blob1 {
+  left: -50rpx;
+  top: -90rpx;
+  background: #fbbf24;
+}
+
+.blob2 {
+  left: 110rpx;
+  top: -20rpx;
+  background: #f97316;
+}
+
+.blob3 {
+  left: -40rpx;
+  top: 100rpx;
+  background: #ef4444;
+}
+
+.blob4 {
+  left: 100rpx;
+  top: 180rpx;
+  background: #fcd34d;
+}
+
+// 累计收益金属卡片样式
+.total-profit-card {
+  height: 340rpx;
+  min-height: 240rpx;
+  background-image: linear-gradient(to right bottom, #252324, #292728, #2d2c2d, #313031, #353535);
+  box-shadow: 7px 7px 10px rgba(0, 0, 0, 0.307);
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.metal-card-top {
+  position: absolute;
+  width: 65%;
+  height: 37%;
+  top: 0;
+  left: 37rpx;
+  background-image: linear-gradient(to right bottom, #202020, #222222, #232323, #252525, #272727);
+  z-index: 500;
+  border-top: 4rpx solid #e8e8e8;
+  border-right: 3rpx solid #121212;
+  border-bottom: 3rpx solid #121212;
+  border-left: 3rpx solid #121212;
+  border-bottom-left-radius: 10rpx;
+  border-bottom-right-radius: 10rpx;
+}
+
+.metal-card-plastic {
+  position: absolute;
+  top: 0;
+  right: 32%;
+  width: 25%;
+  background-color: black;
+  height: 82%;
+  z-index: 1000;
+  border-top: 30rpx solid white;
+}
+
+.metal-card-bottom {
+  z-index: 1000;
+  position: absolute;
+  bottom: 1rpx;
+  right: 50%;
+  transform: translate(50%, 0);
+  width: 75%;
+  height: 52%;
+  background-color: #ecebe0;
+  border-top-left-radius: 5rpx;
+  border-top-right-radius: 5rpx;
+  border-top: 3rpx solid #121212;
+  border-left: 3rpx solid #121212;
+  border-right: 3rpx solid #121212;
+  border-radius: 10rpx;
+}
+
+.metal-card-metal {
+  z-index: 2000;
+  position: absolute;
+  top: -3rpx;
+  right: 0;
+  width: 77%;
+  height: 103%;
+  background-image: linear-gradient(to right bottom, #bdbdbd, #cacaca, #d7d7d7, #e5e5e5, #f2f2f2);
+  border-bottom-left-radius: 10rpx;
+  border-bottom-right-radius: 10rpx;
+  clip-path: polygon(0% 0%, 0% 100%, 60% 100%, 60% 18%, 85% 18%, 85% 93%, 25% 93%, 25% 100%, 100% 100%, 100% 0%);
+  animation: metalSlide 3s ease-in-out infinite;
+}
+
+@keyframes metalSlide {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-44rpx); }
+}
+
+.metal-card-minicuadro1 {
+  bottom: 12rpx;
+  right: 12rpx;
+  position: absolute;
+  width: 20rpx;
+  height: 20rpx;
+  background-color: #d7d7d7;
+  border: 1rpx solid #191919;
+}
+
+.metal-card-minicuadro2 {
+  bottom: 12rpx;
+  left: 12rpx;
+  position: absolute;
+  width: 20rpx;
+  height: 20rpx;
+  background-image: linear-gradient(to right bottom, #191919, #202020, #272727, #2e2e2e, #353535);
+  border: 1rpx solid #191919;
+}
+
+.metal-card-yellow {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 8rpx;
+  background-color: rgb(255, 157, 0);
+}
+
+.metal-card-content {
+  position: absolute;
+  top: 8rpx;
+  left: 16rpx;
+  right: 16rpx;
+  z-index: 10;
+}
+
+.metal-card-label {
+  font-size: 28rpx;
+  color: $text-primary;
+  font-weight: bold;
+  text-transform: uppercase;
+  display: block;
+  margin-top: 10rpx;
+  margin-bottom: 14rpx;
+}
+
+.metal-card-value {
+  font-size: 28rpx;
+  font-weight: 800;
+  letter-spacing: -1rpx;
+  line-height: 24rpx;
+  display: block;
+  margin-bottom: 10rpx;
+  
+  &.red { color: #dc2626; }
+  &.green { color: #16a34a; }
+}
+
+.metal-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 4rpx 10rpx;
+  border-radius: 16rpx;
+  font-size: 18rpx;
+  font-weight: 700;
+  width: fit-content;
+  
+  &.up { background: rgba(220, 38, 38, 0.15); color: #dc2626; }
+  &.down { background: rgba(22, 163, 74, 0.15); color: #16a34a; }
+}
+
+.metal-card-arrow {
+  width: 16rpx;
+  height: 16rpx;
+}
+
+
 .card-label {
   font-size: 22rpx;
-  color: $text-tertiary;
+  // color: $text-tertiary;
+  color: $text-primary;
   margin-bottom: 16rpx;
   font-weight: 600;
   text-transform: uppercase;
@@ -633,6 +1868,11 @@ export default {
   .arrow {
     font-size: 22rpx;
   }
+  
+  .arrow-svg {
+    width: 28rpx;
+    height: 28rpx;
+  }
 }
 
 .today-badge {
@@ -645,19 +1885,25 @@ export default {
   font-weight: 700;
   margin-top: 16rpx;
   white-space: nowrap;
+  background: rgb(255 255 255 / 30%);
   
   &.up {
-    background: rgba(220, 38, 38, 0.12);
+    // background: rgba(220, 38, 38, 0.12);
     color: $accent-red;
   }
   
   &.down {
-    background: rgba(5, 150, 105, 0.12);
+    // background: rgba(5, 150, 105, 0.12);
     color: $accent-green;
   }
   
   .arrow {
     font-size: 18rpx;
+  }
+  
+  .arrow-svg {
+    width: 20rpx;
+    height: 20rpx;
   }
 }
 
@@ -668,6 +1914,7 @@ export default {
   margin-bottom: 24rpx;
   position: relative;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .section-title {
@@ -731,6 +1978,13 @@ export default {
 .holding-list {
   position: relative;
   z-index: 10;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  // 启用内部滚动
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 .holding-card {
@@ -957,48 +2211,6 @@ export default {
   &.red { color: $accent-red; }
 }
 
-.heartbeat-row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8rpx;
-  margin-top: 8rpx;
-  padding-top: 8rpx;
-  border-top: 1px dashed rgba(180, 130, 70, 0.2);
-}
-
-.heartbeat-icon {
-  font-size: 20rpx;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.2); opacity: 0.8; }
-}
-
-.heartbeat-value {
-  font-size: 24rpx;
-  font-weight: 700;
-  
-  &.green { color: $accent-green; }
-  &.red { color: $accent-red; }
-}
-
-.heartbeat-rate {
-  font-size: 20rpx;
-  font-weight: 600;
-  
-  &.green { color: $accent-green; }
-  &.red { color: $accent-red; }
-}
-
-.heartbeat-time {
-  font-size: 18rpx;
-  color: $text-tertiary;
-  margin-left: 8rpx;
-}
-
 .estimate-time {
   font-size: 18rpx;
   color: $text-tertiary;
@@ -1058,7 +2270,9 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1073,19 +2287,13 @@ export default {
 
 .modal-container {
   width: 580rpx;
-  background: linear-gradient(145deg, 
-    rgba(255, 251, 240, 0.98) 0%, 
-    rgba(254, 243, 199, 0.95) 100%);
-  border-radius: 32rpx;
+  background: #fffcf5;
+  box-shadow: 0 10px 40px rgba(217, 119, 6, 0.15);
+  border-radius: 40rpx;
   padding: 48rpx 40rpx 40rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 
-    0 20rpx 60rpx rgba(180, 130, 70, 0.3),
-    0 8rpx 24rpx rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border: 2px solid rgba(217, 119, 6, 0.2);
   animation: slideUp 0.3s ease;
 }
 

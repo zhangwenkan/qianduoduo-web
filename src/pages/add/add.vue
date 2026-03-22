@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" @tap="handlePageTap">
     <!-- 背景装饰 -->
     <view class="bg-grid"></view>
     <view class="bg-glow bg-glow-1"></view>
@@ -26,10 +26,12 @@
           maxlength="6"
           :disabled="isEdit"
           @input="onFundCodeInput"
+          @focus="onFundCodeFocus"
+          @tap.stop
         />
         
         <!-- 搜索结果 -->
-        <view class="search-result" v-if="searchResults.length > 0 && showSearch">
+        <view class="search-result" :class="{ 'is-fixed': !isFundSelected }" v-if="searchResults.length > 0 && showSearch" @tap.stop>
           <view 
             class="search-result-item" 
             v-for="item in searchResults" 
@@ -38,7 +40,10 @@
           >
             <view class="result-info">
               <text class="result-name">{{ item.name }}</text>
-              <text class="result-code">{{ item.code }}</text>
+              <view class="result-code-row">
+                <text class="result-code">{{ item.code }}</text>
+                <text class="held-tag" v-if="isHeld(item.code)">持有</text>
+              </view>
             </view>
             <text class="result-type">{{ item.type || '基金' }}</text>
           </view>
@@ -90,7 +95,7 @@
       </view>
 
       <!-- 提交按钮 -->
-      <button class="submit-btn" :disabled="!canSubmit" @tap="submit">
+      <button class="submit-btn" :class="{ 'is-disabled': !canSubmit }" :disabled="!canSubmit" @tap="submit">
         {{ isEdit ? '保存修改' : '确认添加' }}
       </button>
     </view>
@@ -117,17 +122,34 @@ export default {
       preview: {
         rate: 0,
         today: 0
-      }
+      },
+      existingHoldings: [] // 已有持仓列表
     }
   },
   computed: {
     canSubmit() {
+      // 编辑模式下不检查是否已持有
+      if (this.isEdit) {
+        return this.form.fundCode.length >= 6 && 
+               parseFloat(this.form.amount) > 0 && 
+               this.form.profit !== ''
+      }
+      // 新增模式下检查是否已持有
       return this.form.fundCode.length >= 6 && 
              parseFloat(this.form.amount) > 0 && 
-             this.form.profit !== ''
+             this.form.profit !== '' &&
+             !this.isHeld(this.form.fundCode)
+    },
+    isFundSelected() {
+      // 判断是否已选中基金（搜索结果只有一条且与输入代码匹配）
+      return this.searchResults.length === 1 && 
+             this.searchResults[0].code === this.form.fundCode
     }
   },
   onLoad(options) {
+    // 获取已有持仓列表
+    this.existingHoldings = getHoldings()
+    
     if (options.id) {
       this.isEdit = true
       this.editId = options.id
@@ -174,6 +196,22 @@ export default {
       }
     },
     
+    // 基金代码聚焦
+    onFundCodeFocus() {
+      const code = this.form.fundCode
+      if (code.length >= 2 && this.searchResults.length > 0) {
+        this.showSearch = true
+      }
+    },
+    
+    // 页面点击
+    handlePageTap() {
+      // 点击外部区域关闭搜索结果
+      if (this.showSearch) {
+        this.showSearch = false
+      }
+    },
+    
     // 搜索基金
     async searchFunds(keyword) {
       try {
@@ -187,8 +225,8 @@ export default {
     selectFund(fund) {
       this.form.fundCode = fund.code
       this.form.fundName = fund.name
-      this.showSearch = false
-      this.searchResults = []
+      // 只保留选中的结果，清除其他结果
+      this.searchResults = [fund]
     },
     
     // 计算预览
@@ -290,6 +328,11 @@ export default {
     // 返回
     goBack() {
       uni.navigateBack()
+    },
+    
+    // 判断基金是否已持有
+    isHeld(fundCode) {
+      return this.existingHoldings.some(h => h.fundCode === fundCode)
     }
   }
 }
@@ -297,10 +340,12 @@ export default {
 
 <style lang="scss" scoped>
 .page {
-  min-height: 100vh;
+  height: 100vh;
   padding: 32rpx;
   position: relative;
-  overflow-x: hidden;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 背景装饰 */
@@ -350,6 +395,7 @@ export default {
   margin-bottom: 24rpx;
   position: relative;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .back-btn {
@@ -395,7 +441,7 @@ export default {
   z-index: 10;
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 160rpx);
+  flex: 1;
 }
 
 .form-section {
@@ -463,8 +509,17 @@ export default {
   border-radius: $radius-md;
   backdrop-filter: $glass-blur;
   margin-top: 20rpx;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 1100rpx;
   box-shadow: $shadow-md;
+  
+  &.is-fixed {
+    position: fixed;
+    left: 32rpx;
+    right: 32rpx;
+    z-index: 100;
+  }
 }
 
 .search-result-item {
@@ -498,6 +553,22 @@ export default {
 .result-code {
   font-size: 24rpx;
   color: $text-tertiary;
+}
+
+.result-code-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.held-tag {
+  font-size: 20rpx;
+  color: $accent-gold;
+  background: rgba(217, 119, 6, 0.12);
+  padding: 4rpx 12rpx;
+  border-radius: 6rpx;
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  font-weight: 600;
 }
 
 .result-type {
@@ -602,24 +673,35 @@ export default {
 
 /* 提交按钮 */
 .submit-btn {
-  width: 100%;
-  padding: 28rpx 40rpx;
-  background: linear-gradient(135deg, $accent-gold, $accent-terracotta);
+  --bg: #e74c3c;
+  --text-color: #fff;
+  position: relative;
+  width: 300rpx;
   border: none;
-  border-radius: $radius-lg;
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #fff;
+  background-color: var(--bg) !important;
+  background: var(--bg) !important;
+  color: var(--text-color) !important;
+  padding: 20rpx 32rpx !important;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: 0.2s;
+  border-radius: 10rpx;
+  letter-spacing: 2rpx;
+  box-shadow: #c0392b 0px 12rpx 4rpx, #000 0px 14rpx 8rpx;
+  font-size: 26rpx !important;
+  line-height: 1.2 !important;
   margin-top: auto;
   margin-bottom: 32rpx;
-  box-shadow: 0 8rpx 32rpx rgba(217, 119, 6, 0.3);
+  margin-left: auto;
+  margin-right: auto;
   
-  &:disabled {
-    opacity: 0.4;
+  &.is-disabled {
+    opacity: 0.5 !important;
   }
   
-  &:active:not(:disabled) {
-    transform: scale(0.98);
+  &:active:not(.is-disabled) {
+    transform: translateY(4rpx);
+    box-shadow: #c0392b 0px 8rpx 2rpx, #000 0px 10rpx 6rpx;
   }
 }
 </style>
