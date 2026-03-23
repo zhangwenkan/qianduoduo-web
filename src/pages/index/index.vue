@@ -413,8 +413,8 @@ export default {
     this.loadData()
     // #ifdef H5
     // 禁用H5页面滚动
-    document.body.style.overflow = 'hidden'
-    document.documentElement.style.overflow = 'hidden'
+    // document.body.style.overflow = 'hidden'
+    // document.documentElement.style.overflow = 'hidden'
     // #endif
   },
   onReady() {
@@ -423,8 +423,8 @@ export default {
   onHide() {
     // #ifdef H5
     // 恢复滚动
-    document.body.style.overflow = ''
-    document.documentElement.style.overflow = ''
+    // document.body.style.overflow = ''
+    // document.documentElement.style.overflow = ''
     // #endif
   },
   onPullDownRefresh() {
