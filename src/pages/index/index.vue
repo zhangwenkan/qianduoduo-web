@@ -18,7 +18,7 @@
     </view>
 
     <!-- 统计卡片 Bento Grid -->
-    <view class="bento-grid-wrapper" :class="{ 'bento-grid-collapsed': currentTab === 'watchlist' }">
+    <view class="bento-grid-wrapper" :class="{ 'bento-grid-collapsed': currentTab === 'watchlist' || isCardsCollapsed }">
       <view class="bento-grid">
         <!-- 总资产 -->
       <view class="amount-card">
@@ -117,7 +117,7 @@
     </view>
 
     <!-- Tab 切换 -->
-    <view class="tab-switcher" :class="{ 'tab-switcher-up': currentTab === 'watchlist' }">
+    <view class="tab-switcher" :class="{ 'tab-switcher-up': currentTab === 'watchlist' || isCardsCollapsed }">
       <view class="tab-item" :class="{ active: currentTab === 'holdings' }" @tap="switchTab('holdings')">
         <text class="tab-text">我的持仓</text>
         <view class="tab-indicator" v-if="currentTab === 'holdings'"></view>
@@ -131,6 +131,15 @@
     <!-- 持仓列表 -->
     <view class="section-header" v-show="currentTab === 'holdings'">
       <text class="section-title">我的持仓</text>
+      <!-- 收起/展开按钮 -->
+      <view class="collapse-btn" @tap="toggleCardsCollapse">
+        <!-- #ifdef H5 -->
+        <view id="rollup-lottie-canvas" class="rollup-lottie-canvas" :style="{ transform: isCardsCollapsed ? 'rotate(180deg)' : 'rotate(0deg)' }"></view>
+        <!-- #endif -->
+        <!-- #ifdef MP-WEIXIN -->
+        <canvas id="rollup-lottie-canvas" type="2d" class="rollup-lottie-canvas" :style="{ transform: isCardsCollapsed ? 'rotate(180deg)' : 'rotate(0deg)' }"></canvas>
+        <!-- #endif -->
+      </view>
       <view class="sort-control">
         <picker mode="selector" :range="sortOptions" range-key="label" @change="onSortTypeChange">
           <view class="sort-picker">
@@ -351,6 +360,7 @@ export default {
   data() {
     return {
       currentTab: 'holdings',
+      isCardsCollapsed: false,
       watchlist: [],
       watchlistEstimates: {},
       holdings: [],
@@ -427,8 +437,9 @@ export default {
       import('lottie-web').then(lottie => {
         Promise.all([
           import('@/static/icons/piggy-saving.json'),
-          import('@/static/icons/stock.json')
-        ]).then(([piggySavingData, stockData]) => {
+          import('@/static/icons/stock.json'),
+          import('@/static/icons/rollup.json')
+        ]).then(([piggySavingData, stockData, rollupData]) => {
           // 加载 piggy-saving 动画
           lottie.default.loadAnimation({
             container: document.getElementById('lottie-canvas'),
@@ -445,6 +456,15 @@ export default {
             loop: true,
             autoplay: true,
             animationData: stockData.default
+          })
+          
+          // 加载 rollup 动画
+          lottie.default.loadAnimation({
+            container: document.getElementById('rollup-lottie-canvas'),
+            renderer: 'svg',
+            loop: false,
+            autoplay: false,
+            animationData: rollupData.default
           })
         }).catch(err => {
           console.error('加载lottie动画失败:', err)
@@ -524,6 +544,42 @@ export default {
             })
           }
         })
+      
+      // 加载rollup.json动画（微信小程序）
+      const rollupQuery = uni.createSelectorQuery().in(this)
+      rollupQuery.select('#rollup-lottie-canvas')
+        .fields({ node: true, size: true })
+        .exec((res) => {
+          if (res && res[0]) {
+            const canvas = res[0].node
+            const ctx = canvas.getContext('2d')
+            
+            const dpr = 3
+            canvas.width = 48 * dpr
+            canvas.height = 48 * dpr
+            ctx.scale(dpr, dpr)
+            
+            uni.request({
+              url: '/static/icons/rollup.json',
+              success: (response) => {
+                const lottie = require('lottie-miniprogram')
+                lottie.loadAnimation({
+                  loop: false,
+                  autoplay: false,
+                  animationData: response.data,
+                  rendererSettings: {
+                    context: ctx,
+                    canvas: canvas,
+                    clearCanvas: true
+                  }
+                })
+              },
+              fail: (err) => {
+                console.error('加载rollup动画失败:', err)
+              }
+            })
+          }
+        })
       // #endif
     },
     
@@ -532,6 +588,10 @@ export default {
       if (tab === 'watchlist' && this.watchlist.length > 0) {
         this.refreshWatchlistEstimates()
       }
+    },
+    
+    toggleCardsCollapse() {
+      this.isCardsCollapsed = !this.isCardsCollapsed
     },
     
     async loadData() {
@@ -876,10 +936,6 @@ export default {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  
-  // 禁用页面滚动
-  touch-action: none;
-  -webkit-overflow-scrolling: auto;
 }
 
 .tab-switcher {
@@ -1904,12 +1960,40 @@ export default {
   position: relative;
   z-index: 10;
   flex-shrink: 0;
+  gap: 16rpx;
 }
 
 .section-title {
   font-size: 32rpx;
   font-weight: 600;
   color: $text-primary;
+  flex-shrink: 0;
+}
+
+// 收起/展开按钮（在section-header中）
+.collapse-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56rpx;
+  max-width: 120rpx;
+  background: rgba(180, 130, 70, 0.08);
+  border-radius: 28rpx;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:active {
+    transform: scale(0.95);
+    background: rgba(180, 130, 70, 0.15);
+  }
+}
+
+.rollup-lottie-canvas {
+  width: 40rpx;
+  height: 40rpx;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center center;
+  will-change: transform;
 }
 
 .sort-control {
@@ -1968,6 +2052,7 @@ export default {
   position: relative;
   z-index: 10;
   flex: 1;
+  min-height: 0; // 关键：允许flex子项收缩
   overflow-y: auto;
   overflow-x: hidden;
   
