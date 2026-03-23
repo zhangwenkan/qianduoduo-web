@@ -154,7 +154,7 @@
       </view>
     </view>
 
-    <view class="holding-list" v-show="currentTab === 'holdings'">
+    <scroll-view class="holding-list" scroll-y v-show="currentTab === 'holdings'">
       <view 
         class="holding-card" 
         v-for="item in holdings" 
@@ -218,7 +218,7 @@
         <text class="empty-text">还没有持仓记录</text>
         <text class="empty-hint">点击右下角按钮添加第一支基金</text>
       </view>
-    </view>
+    </scroll-view>
 
     <!-- 自选列表 -->
     <view class="watchlist-section" v-show="currentTab === 'watchlist'">
@@ -227,7 +227,7 @@
         <text class="section-count">{{ watchlist.length }} 支</text>
       </view>
       
-      <view class="watchlist-container">
+    <scroll-view class="watchlist-container" scroll-y>
         <view 
           class="watch-card" 
           v-for="item in watchlistWithEstimate" 
@@ -261,7 +261,7 @@
           <text class="empty-text">还没有自选基金</text>
           <text class="empty-hint">在添加基金时可选择加入自选</text>
         </view>
-      </view>
+      </scroll-view>
     </view>
 
     <!-- 添加按钮 FAB -->
@@ -932,7 +932,7 @@ export default {
   // height: 100vh;
   padding: 32rpx;
   position: relative;
-  overflow: hidden;
+  // overflow: hidden;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -1009,13 +1009,15 @@ export default {
   z-index: 10;
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
 }
 
 .watchlist-container {
   position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .watch-card {
@@ -2056,9 +2058,7 @@ export default {
   z-index: 10;
   flex: 1;
   min-height: 0; // 关键：允许flex子项收缩
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
 }
 
 .holding-card {
