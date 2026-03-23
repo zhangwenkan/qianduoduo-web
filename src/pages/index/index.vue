@@ -929,11 +929,10 @@ export default {
 
 <style lang="scss" scoped>
 .page {
-  min-height: 100vh;
   height: 100vh;
   padding: 32rpx;
   position: relative;
-  // overflow: hidden;
+  overflow: hidden;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -1009,8 +1008,10 @@ export default {
   position: relative;
   z-index: 10;
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .watchlist-container {
@@ -2055,15 +2056,9 @@ export default {
   z-index: 10;
   flex: 1;
   min-height: 0; // 关键：允许flex子项收缩
-  // overflow-y: scroll;
-  // overflow-x: hidden;
-  
-  // 启用内部滚动
-  touch-action: pan-y;
+  overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  
-  // 确保在iOS上滚动正常
-  transform: translateZ(0);
 }
 
 .holding-card {
