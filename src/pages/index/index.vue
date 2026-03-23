@@ -2055,8 +2055,8 @@ export default {
   z-index: 10;
   flex: 1;
   min-height: 0; // 关键：允许flex子项收缩
-  overflow-y: scroll;
-  overflow-x: hidden;
+  // overflow-y: scroll;
+  // overflow-x: hidden;
   
   // 启用内部滚动
   touch-action: pan-y;
