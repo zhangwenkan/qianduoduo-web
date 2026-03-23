@@ -929,10 +929,11 @@ export default {
 
 <style lang="scss" scoped>
 .page {
+  min-height: 100vh;
   height: 100vh;
   padding: 32rpx;
   position: relative;
-  overflow: hidden;
+  // overflow: hidden;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -1442,6 +1443,7 @@ export default {
   max-height: 740rpx;
   padding: 0 30rpx 0 0;
   margin-right: -30rpx;
+  flex-shrink: 0;
 }
 
 .bento-grid-collapsed {
@@ -2053,12 +2055,15 @@ export default {
   z-index: 10;
   flex: 1;
   min-height: 0; // 关键：允许flex子项收缩
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
   
   // 启用内部滚动
   touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
+  
+  // 确保在iOS上滚动正常
+  transform: translateZ(0);
 }
 
 .holding-card {
