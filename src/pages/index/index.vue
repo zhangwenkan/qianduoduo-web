@@ -929,7 +929,7 @@ export default {
 
 <style lang="scss" scoped>
 .page {
-  // height: 100vh;
+  height: 100vh;
   padding: 32rpx;
   position: relative;
   // overflow: hidden;
