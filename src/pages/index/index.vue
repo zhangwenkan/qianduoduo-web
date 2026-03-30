@@ -17,6 +17,28 @@
       </view>
     </view>
 
+    <!-- 折叠后的迷你统计条 -->
+    <view class="mini-stats-bar" v-if="(currentTab === 'holdings' && isCardsCollapsed)">
+      <view class="mini-stat-item">
+        <text class="mini-stat-label">总资产</text>
+        <text class="mini-stat-value">{{ formatMoney(stats.totalAmount) }}</text>
+      </view>
+      <view class="mini-stat-divider"></view>
+      <view class="mini-stat-item">
+        <text class="mini-stat-label">今日盈亏</text>
+        <text class="mini-stat-value" :class="stats.todayProfit >= 0 ? 'red' : 'green'">
+          {{ formatMoney(stats.todayProfit, true) }}
+        </text>
+      </view>
+      <view class="mini-stat-divider"></view>
+      <view class="mini-stat-item">
+        <text class="mini-stat-label">累计收益</text>
+        <text class="mini-stat-value" :class="stats.totalProfit >= 0 ? 'red' : 'green'">
+          {{ formatMoney(stats.totalProfit, true) }}
+        </text>
+      </view>
+    </view>
+
     <!-- 统计卡片 Bento Grid -->
     <view class="bento-grid-wrapper" :class="{ 'bento-grid-collapsed': currentTab === 'watchlist' || isCardsCollapsed }">
       <view class="bento-grid">
@@ -1440,17 +1462,126 @@ export default {
   }
 }
 
+// 折叠后的迷你统计条
+.mini-stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 32rpx;
+  border-radius: $radius-lg;
+  margin-bottom: 24rpx;
+  box-shadow: $shadow-sm;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+  overflow: hidden;
+  animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  
+  // 渐变背景层
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(120deg, bisque 60%, rgb(255, 231, 222) 88%, rgb(255, 211, 195) 40%, rgba(255, 127, 80, 0.603) 48%);
+    z-index: 0;
+    animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  // 毛玻璃内容层
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: $radius-lg;
+    z-index: 1;
+    animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20rpx) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.mini-stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+  position: relative;
+  z-index: 2;
+}
+
+.mini-stat-label {
+  font-size: 22rpx;
+  color: $text-tertiary;
+  font-weight: 500;
+}
+
+.mini-stat-value {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: $text-primary;
+  
+  &.red { color: $accent-red; }
+  &.green { color: $accent-green; }
+}
+
+.mini-stat-divider {
+  width: 1px;
+  height: 48rpx;
+  background: rgba(180, 130, 70, 0.2);
+  position: relative;
+  z-index: 2;
+}
+
 .bento-grid-wrapper {
   overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              margin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   max-height: 740rpx;
   padding: 0 30rpx 0 0;
   margin-right: -30rpx;
   flex-shrink: 0;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .bento-grid-collapsed {
   max-height: 0;
+  opacity: 0;
+  transform: translateY(-20rpx);
+  padding: 0;
+  margin: 0;
 }
 
 .bento-grid {
@@ -2059,6 +2190,9 @@ export default {
   flex: 1;
   min-height: 0; // 关键：允许flex子项收缩
   overflow: hidden;
+  
+  // 当统计卡片折叠时，增加持仓列表的可用空间
+  // 通过动态计算高度来优化滚动区域
 }
 
 .holding-card {
