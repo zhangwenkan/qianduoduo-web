@@ -32,16 +32,24 @@
     <view class="section" v-if="topHoldings.length > 0">
       <text class="section-title">十大持仓股</text>
       <view class="holdings-list">
-        <view class="holding-item" v-for="item in topHoldings" :key="item.code">
-          <view class="holding-left">
-            <text class="holding-rank">{{ item.rank }}</text>
-            <view class="holding-info">
-              <text class="holding-name">{{ item.name }}</text>
-              <text class="holding-code">{{ item.code }}</text>
+        <view
+          class="holding-item"
+          :class="{ 'is-active': activeHoldingIndex === index }"
+          v-for="(item, index) in topHoldings"
+          :key="item.code"
+          :style="getHoldingStyle(index)"
+        >
+          <view class="holding-face holding-main">
+            <view class="holding-left">
+              <text class="holding-rank">{{ item.rank }}</text>
+              <view class="holding-info">
+                <text class="holding-name">{{ item.name }}</text>
+                <text class="holding-code">{{ item.code }}</text>
+              </view>
             </view>
-          </view>
-          <view class="holding-right">
-            <text class="holding-percent" :class="parseFloat(item.percent) >= 0 ? 'red' : 'green'">{{ item.percent }}</text>
+            <view class="holding-right">
+              <text class="holding-percent" :class="parseFloat(item.percent) >= 0 ? 'red' : 'green'">{{ item.percent }}</text>
+            </view>
           </view>
         </view>
       </view>
@@ -71,7 +79,9 @@ export default {
       estimatedNav: null,
       estimatedPercent: null,
       timeDesc: '',
-      topHoldings: []
+      topHoldings: [],
+      activeHoldingIndex: 0,
+      holdingTimer: null
     }
   },
   
@@ -82,12 +92,64 @@ export default {
       this.loadDetail()
     }
   },
-  
+
+  onUnload() {
+    this.clearHoldingAnimation()
+  },
+
   methods: {
     goBack() {
       uni.navigateBack()
     },
-    
+
+    getHoldingTone(index) {
+      const tones = [
+        { front: '#b39be8', side: '#b39be8', top: '#b39be8' },
+        { front: '#bea8eb', side: '#bea8eb', top: '#bea8eb' },
+        { front: '#c9b5ee', side: '#c9b5ee', top: '#c9b5ee' },
+        { front: '#d3c2f1', side: '#d3c2f1', top: '#d3c2f1' },
+        { front: '#ddcff3', side: '#ddcff3', top: '#ddcff3' },
+        { front: '#e6dbf6', side: '#e6dbf6', top: '#e6dbf6' },
+        { front: '#eee5f8', side: '#eee5f8', top: '#eee5f8' },
+        { front: '#f4ecfa', side: '#f4ecfa', top: '#f4ecfa' },
+        { front: '#f8f1fc', side: '#f8f1fc', top: '#f8f1fc' },
+        { front: '#fcf7fe', side: '#fcf7fe', top: '#fcf7fe' }
+      ]
+      return tones[index] || tones[tones.length - 1]
+    },
+
+    getHoldingStyle(index) {
+      const tone = this.getHoldingTone(index)
+      return `--i:${this.topHoldings.length - index};--tone:${tone.front};--tone-side:${tone.side};--tone-top:${tone.top}`
+    },
+
+    startHoldingAnimation() {
+      this.clearHoldingAnimation()
+      if (!this.topHoldings.length) {
+        this.activeHoldingIndex = 0
+        return
+      }
+      this.activeHoldingIndex = 0
+      if (this.topHoldings.length === 1) {
+        return
+      }
+      this.holdingTimer = setInterval(() => {
+        this.activeHoldingIndex = (this.activeHoldingIndex + 1) % this.topHoldings.length
+      }, 3000)
+    },
+
+    clearHoldingAnimation() {
+      if (this.holdingTimer) {
+        clearInterval(this.holdingTimer)
+        this.holdingTimer = null
+      }
+    },
+
+    parseHoldingPercent(value) {
+      const num = parseFloat(String(value || '').replace('%', ''))
+      return Number.isFinite(num) ? num : 0
+    },
+
     async loadDetail() {
       this.loading = true
       try {
@@ -101,7 +163,8 @@ export default {
         }
         
         const holdings = await getFundTopHoldings(this.fundCode)
-        this.topHoldings = holdings || []
+        this.topHoldings = (holdings || []).slice().sort((a, b) => this.parseHoldingPercent(b.percent) - this.parseHoldingPercent(a.percent))
+        this.startHoldingAnimation()
       } catch (e) {
         console.error('获取基金详情失败:', e)
       } finally {
@@ -272,6 +335,7 @@ export default {
   border: 1px solid rgba(180, 130, 70, 0.1);
   border-radius: 20rpx;
   padding: 28rpx;
+  padding-bottom: 80rpx;
   margin-bottom: 24rpx;
   position: relative;
   z-index: 10;
@@ -330,65 +394,116 @@ export default {
 }
 
 .holdings-list {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 0;
+  padding: 40rpx 0 0 40rpx;
+  transform: skewY(-14deg);
 }
 
 .holding-item {
+  position: relative;
+  list-style: none;
+  width: 100%;
+  z-index: var(--i);
+  transition: 0.3s;
+  color: #fff;
+}
+
+.holding-item::before,
+.holding-item::after {
+  position: absolute;
+  content: '';
+  transition: 0.3s;
+}
+
+.holding-item::before {
+  background: var(--tone-side);
+  top: 0;
+  left: -40rpx;
+  width: 40rpx;
+  height: 100%;
+  transform-origin: right;
+  transform: skewY(45deg);
+}
+
+.holding-item::after {
+  background: var(--tone-top);
+  width: 100%;
+  height: 40rpx;
+  top: -40rpx;
+  left: 0;
+  transform-origin: bottom;
+  transform: skewX(45deg);
+}
+
+.holding-item.is-active {
+  transform: translateX(-20rpx);
+}
+
+.holding-face {
+  width: 100%;
+  min-height: 40px;
+  position: relative;
+  padding: 18rpx 22rpx;
+  box-sizing: border-box;
+  background: var(--tone);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16rpx 20rpx;
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 16rpx;
-  border: 1px solid rgba(180, 130, 70, 0.1);
 }
 
 .holding-left {
   display: flex;
   align-items: center;
   gap: 16rpx;
+  min-width: 0;
+  flex: 1;
 }
 
 .holding-rank {
-  width: 40rpx;
+  min-width: 40rpx;
   height: 40rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(217, 119, 6, 0.2) 0%, rgba(180, 83, 9, 0.15) 100%);
-  border-radius: 50%;
   font-size: 22rpx;
   font-weight: 700;
-  color: $accent-terracotta;
+  color: #111;
+  background: rgba(255, 255, 255, 0.35);
 }
 
 .holding-info {
   display: flex;
   flex-direction: column;
   gap: 4rpx;
+  min-width: 0;
 }
 
 .holding-name {
   font-size: 28rpx;
   font-weight: 600;
-  color: $text-primary;
+  color: #111;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .holding-code {
   font-size: 20rpx;
-  color: $text-tertiary;
+  color: #222;
 }
 
 .holding-right {
   flex-shrink: 0;
+  margin-left: 20rpx;
 }
 
 .holding-percent {
   font-size: 28rpx;
   font-weight: 700;
-  
+
   &.green { color: $accent-green; }
   &.red { color: $accent-red; }
 }
