@@ -248,35 +248,119 @@
         <text class="section-title">自选基金</text>
         <text class="section-count">{{ watchlist.length }} 支</text>
       </view>
-      
-    <scroll-view class="watchlist-container" scroll-y>
-        <view 
-          class="watch-card" 
-          v-for="item in watchlistWithEstimate" 
-          :key="item.id"
-          @tap="goDetail(item)"
-        >
-          <view class="watch-main">
-            <view class="watch-info">
-              <text class="watch-name">{{ item.fundName || '未命名基金' }}</text>
-              <view class="watch-meta">
-                <text class="watch-code">{{ item.fundCode }}</text>
-                <text class="watch-sector" v-if="item.sectors && item.sectors.length > 0">{{ item.sectors[0] }}</text>
-              </view>
-            </view>
-            <view class="watch-estimate">
-              <text class="watch-rate" :class="item.todayRate >= 0 ? 'red' : 'green'">
-                {{ formatTodayRate(item.todayRate) }}
-              </text>
+
+      <!-- 嵌入式添加自选基金 -->
+      <view class="add-watch-embed" v-if="showAddWatchModal || isClosingAddWatch" :class="{ 'add-watch-embed-closing': isClosingAddWatch }">
+        <view class="add-watch-modal-content">
+          <view class="add-watch-shell">
+            <view class="add-watch-notch-bar"></view>
+            <!-- 右上角缺口 -->
+            <view class="add-watch-corner">
+              <view class="add-watch-close" @tap="closeAddWatchModal">
+              <image class="close-icon-svg" src="data:image/svg+xml,%3Csvg%20height%3D%22200px%22%20width%3D%22200px%22%20version%3D%221.1%22%20id%3D%22Layer_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%20502%20502%22%20xml%3Aspace%3D%22preserve%22%20fill%3D%22%23000000%22%3E%3Cg%20id%3D%22SVGRepo_bgCarrier%22%20stroke-width%3D%220%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_tracerCarrier%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_iconCarrier%22%3E%20%3Cg%3E%20%3Cg%3E%20%3Ccircle%20style%3D%22fill%3A%23dc704c%3B%22%20cx%3D%22251%22%20cy%3D%22251%22%20r%3D%22241%22%3E%3C%2Fcircle%3E%20%3Cpath%20d%3D%22M251%2C502c-67.045%2C0-130.076-26.108-177.483-73.517C26.108%2C381.076%2C0%2C318.045%2C0%2C251S26.108%2C120.924%2C73.517%2C73.517%20C120.924%2C26.108%2C183.955%2C0%2C251%2C0s130.076%2C26.108%2C177.483%2C73.517C475.892%2C120.924%2C502%2C183.955%2C502%2C251%20s-26.108%2C130.076-73.517%2C177.483C381.076%2C475.892%2C318.045%2C502%2C251%2C502z%20M251%2C20C123.626%2C20%2C20%2C123.626%2C20%2C251s103.626%2C231%2C231%2C231%20s231-103.626%2C231-231S378.374%2C20%2C251%2C20z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3Cg%3E%20%3Cpath%20style%3D%22fill%3A%23D1DCEB%3B%22%20d%3D%22M281.291%2C249l76.729-76.729c8.641-8.641%2C8.641-22.651%2C0-31.291c-8.641-8.641-22.651-8.641-31.291%2C0%20L250%2C217.709l-76.729-76.729c-8.641-8.641-22.651-8.641-31.291%2C0c-8.641%2C8.641-8.641%2C22.651%2C0%2C31.291L218.709%2C249l-76.729%2C76.729%20c-8.641%2C8.641-8.641%2C22.651%2C0%2C31.291c4.32%2C4.32%2C9.984%2C6.48%2C15.646%2C6.48s11.325-2.16%2C15.646-6.48L250%2C280.291l76.729%2C76.729%20c4.32%2C4.32%2C9.984%2C6.48%2C15.646%2C6.48s11.325-2.16%2C15.646-6.48c8.641-8.641%2C8.641-22.651%2C0-31.291L281.291%2C249z%22%3E%3C%2Fpath%3E%20%3Cpath%20d%3D%22M342.374%2C373.5c-8.582%2C0-16.649-3.341-22.717-9.408L250%2C294.434l-69.657%2C69.658c-6.067%2C6.067-14.135%2C9.408-22.717%2C9.408%20c-8.581%2C0-16.648-3.341-22.717-9.407c-12.527-12.527-12.527-32.909-0.001-45.436L204.566%2C249l-69.658-69.657%20c-12.525-12.526-12.525-32.907%2C0-45.434c6.068-6.068%2C14.137-9.41%2C22.718-9.41s16.649%2C3.343%2C22.717%2C9.411L250%2C203.566%20l69.657-69.657c6.067-6.067%2C14.136-9.41%2C22.717-9.41s16.649%2C3.342%2C22.718%2C9.41c12.525%2C12.526%2C12.525%2C32.907%2C0%2C45.434L295.434%2C249%20l69.658%2C69.657c12.526%2C12.526%2C12.526%2C32.908%2C0%2C45.435C359.022%2C370.159%2C350.955%2C373.5%2C342.374%2C373.5z%20M250%2C270.291%20c2.652%2C0%2C5.195%2C1.054%2C7.071%2C2.929l76.729%2C76.729c2.289%2C2.29%2C5.335%2C3.551%2C8.574%2C3.551c3.24%2C0%2C6.285-1.262%2C8.576-3.552%20c4.728-4.728%2C4.728-12.421-0.001-17.148l-76.729-76.729c-1.875-1.876-2.929-4.419-2.929-7.071s1.054-5.195%2C2.929-7.071%20l76.729-76.729c4.729-4.728%2C4.729-12.421%2C0-17.148c-2.29-2.291-5.336-3.553-8.575-3.553s-6.284%2C1.262-8.574%2C3.552l-76.729%2C76.729%20c-3.906%2C3.904-10.236%2C3.904-14.143%2C0L166.2%2C148.052c-2.29-2.291-5.335-3.553-8.574-3.553s-6.285%2C1.262-8.575%2C3.553%20c-4.729%2C4.728-4.729%2C12.421%2C0%2C17.148l76.729%2C76.729c1.875%2C1.876%2C2.929%2C4.419%2C2.929%2C7.071s-1.054%2C5.195-2.929%2C7.071L149.051%2C332.8%20c-4.729%2C4.728-4.729%2C12.421%2C0%2C17.149c2.29%2C2.289%2C5.335%2C3.551%2C8.575%2C3.551c3.239%2C0%2C6.285-1.261%2C8.574-3.551l76.729-76.729%20C244.805%2C271.345%2C247.348%2C270.291%2C250%2C270.291z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3Cg%3E%20%3Cpath%20d%3D%22M50%2C261c-5.522%2C0-10-4.478-10-10c0-39.687%2C11.081-78.358%2C32.045-111.836c20.387-32.557%2C49.233-58.957%2C83.422-76.346%20c4.92-2.506%2C10.942-0.544%2C13.446%2C4.38c2.504%2C4.922%2C0.543%2C10.942-4.38%2C13.446C100.055%2C113.44%2C60%2C178.717%2C60%2C251%20C60%2C256.522%2C55.522%2C261%2C50%2C261z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3Cg%3E%20%3Cpath%20d%3D%22M209.99%2C64.187c-4.641%2C0-8.802-3.249-9.781-7.973c-1.121-5.408%2C2.354-10.7%2C7.763-11.821C222.036%2C41.478%2C236.513%2C40%2C251%2C40%20c5.522%2C0%2C10%2C4.478%2C10%2C10s-4.478%2C10-10%2C10c-13.127%2C0-26.238%2C1.338-38.97%2C3.977C211.346%2C64.118%2C210.663%2C64.187%2C209.99%2C64.187z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3C%2Fg%3E%20%3C%2Fg%3E%3C%2Fsvg%3E" mode="aspectFit" />
             </view>
           </view>
-          <view class="watch-actions">
-            <view class="watch-action-btn" @tap.stop="removeFromWatchlistAction(item)">
-              <text class="watch-action-text">移除</text>
+          <view class="add-watch-header">
+            <view class="add-watch-title">
+              <view class="add-watch-title-dot"></view>
+              <text class="add-watch-title-text">添加自选基金</text>
+            </view>
+          </view>
+          
+          <view class="add-watch-body">
+            <view class="add-watch-input-wrap">
+              <input 
+                class="add-watch-input" 
+                v-model="watchSearchKeyword" 
+                placeholder="输入基金代码或名称" 
+                placeholder-class="input-placeholder"
+                @input="onWatchSearchInput"
+              />
+            </view>
+            
+            <!-- 搜索结果列表 -->
+            <scroll-view class="watch-search-list" scroll-y v-if="watchSearchResults.length > 0">
+              <view 
+                class="search-result-item" 
+                v-for="item in watchSearchResults" 
+                :key="item.code"
+                @tap="selectWatchFund(item)"
+              >
+                <view class="result-main">
+                  <text class="result-name">{{ item.name }}</text>
+                  <text class="result-code">{{ item.code }}</text>
+                </view>
+                <view class="result-action">
+                  <image class="result-action-icon" src="data:image/svg+xml,%3Csvg%20height%3D%22200px%22%20width%3D%22200px%22%20version%3D%221.1%22%20id%3D%22Layer_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%20511.998%20511.998%22%20xml%3Aspace%3D%22preserve%22%20fill%3D%22%23000000%22%3E%3Cg%20id%3D%22SVGRepo_bgCarrier%22%20stroke-width%3D%220%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_tracerCarrier%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_iconCarrier%22%3E%20%3Ccircle%20style%3D%22fill%3A%23fe8671%3B%22%20cx%3D%22256.002%22%20cy%3D%22256.001%22%20r%3D%22247.612%22%3E%3C%2Fcircle%3E%20%3Cpath%20style%3D%22opacity%3A0.1%3Benable-background%3Anew%20%3B%22%20d%3D%22M64.319%2C255.998c0-127.294%2C96.063-232.134%2C219.645-246.028%20c-9.181-1.032-18.508-1.582-27.965-1.582c-136.75%2C0-247.61%2C110.859-247.61%2C247.61s110.858%2C247.61%2C247.61%2C247.61%20c9.457%2C0%2C18.783-0.549%2C27.965-1.582C160.382%2C488.134%2C64.319%2C383.293%2C64.319%2C255.998z%22%3E%3C%2Fpath%3E%20%3Cpolygon%20style%3D%22fill%3A%23FFFFFF%3B%22%20points%3D%22404.963%2C211.407%20300.592%2C211.407%20300.592%2C107.035%20211.408%2C107.035%20211.408%2C211.407%20107.037%2C211.407%20107.037%2C300.591%20211.408%2C300.591%20211.408%2C404.963%20300.592%2C404.963%20300.592%2C300.591%20404.963%2C300.591%20%22%3E%3C%2Fpolygon%3E%20%3Cpath%20d%3D%22M255.999%2C511.998c-68.381%2C0-132.668-26.629-181.019-74.979C26.629%2C388.666%2C0%2C324.378%2C0%2C255.998%20c0-36.75%2C7.624-72.228%2C22.662-105.45c14.525-32.09%2C35.169-60.412%2C61.359-84.178c3.432-3.114%2C8.738-2.857%2C11.85%2C0.575%20c3.114%2C3.431%2C2.857%2C8.737-0.575%2C11.85c-49.898%2C45.282-78.518%2C109.868-78.518%2C177.202c0%2C63.899%2C24.883%2C123.972%2C70.067%2C169.155%20c45.183%2C45.182%2C105.256%2C70.065%2C169.155%2C70.065c54.064%2C0%2C105.073-17.594%2C147.511-50.884c3.647-2.86%2C8.921-2.22%2C11.779%2C1.423%20c2.86%2C3.645%2C2.221%2C8.92-1.423%2C11.779C368.445%2C493.165%2C313.855%2C511.998%2C255.999%2C511.998z%22%3E%3C%2Fpath%3E%20%3Cpath%20d%3D%22M116.4%2C59.876c-2.677%2C0-5.306-1.279-6.931-3.653c-2.604-3.807-1.648-8.997%2C2.133-11.626%20c3.719-2.64%2C8.887-1.822%2C11.607%2C1.867c2.748%2C3.731%2C1.952%2C8.982-1.777%2C11.731c-0.078%2C0.058-0.22%2C0.159-0.302%2C0.213%20C119.681%2C59.401%2C118.032%2C59.876%2C116.4%2C59.876z%22%3E%3C%2Fpath%3E%20%3Cpath%20d%3D%22M433.487%2C437.015c-2.109%2C0-4.218-0.79-5.849-2.376c-3.321-3.232-3.395-8.543-0.163-11.863%20c43.687-44.908%2C67.745-104.138%2C67.745-166.777c0-63.898-24.883-123.971-70.067-169.154S319.897%2C16.779%2C255.998%2C16.779%20c-48.378%2C0-94.988%2C14.377-134.79%2C41.575c-3.827%2C2.612-9.045%2C1.631-11.66-2.194c-2.614-3.826-1.632-9.046%2C2.194-11.66%20C154.345%2C15.389%2C204.228%2C0%2C255.998%2C0c68.38%2C0%2C132.668%2C26.629%2C181.019%2C74.981s74.981%2C112.638%2C74.981%2C181.018%20c0%2C67.034-25.748%2C130.418-72.498%2C178.476C437.857%2C436.166%2C435.673%2C437.015%2C433.487%2C437.015z%22%3E%3C%2Fpath%3E%20%3Cpath%20d%3D%22M300.592%2C413.351h-89.184c-4.634%2C0-8.389-3.755-8.389-8.389v-95.982h-95.982c-4.634%2C0-8.389-3.755-8.389-8.389v-89.184%20c0-4.634%2C3.755-8.389%2C8.389-8.389h95.982v-95.981c0-4.634%2C3.755-8.389%2C8.389-8.389h89.184c4.634%2C0%2C8.389%2C3.755%2C8.389%2C8.389v95.982%20h95.982c4.634%2C0%2C8.389%2C3.755%2C8.389%2C8.389v89.184c0%2C4.634-3.755%2C8.389-8.389%2C8.389h-95.982v95.982%20C308.982%2C409.596%2C305.225%2C413.351%2C300.592%2C413.351z%20M219.797%2C396.572h72.406V300.59c0-4.634%2C3.755-8.389%2C8.389-8.389h95.982v-72.406%20h-95.982c-4.634%2C0-8.389-3.755-8.389-8.389v-95.982h-72.406v95.982c0%2C4.634-3.755%2C8.389-8.389%2C8.389h-95.982v72.406h95.982%20c4.634%2C0%2C8.389%2C3.755%2C8.389%2C8.389L219.797%2C396.572L219.797%2C396.572z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%3C%2Fsvg%3E" mode="aspectFit" />
+                </view>
+              </view>
+            </scroll-view>
+            
+            <!-- 搜索中 -->
+            <view class="watch-search-loading" v-if="watchSearchLoading">
+              <text class="loading-text">搜索中...</text>
+            </view>
+            
+            <!-- 无结果 -->
+            <view class="watch-search-empty" v-if="watchSearchEmpty">
+              <text class="empty-text">未找到相关基金</text>
+            </view>
             </view>
           </view>
         </view>
-        
+      </view>
+
+    <scroll-view class="watchlist-container" scroll-y>
+        <view
+          class="watch-swipe-item"
+          :class="{ 'is-deleting': !!watchDeletingMap[item.id] }"
+          v-for="item in watchlistWithEstimate"
+          :key="item.id"
+        >
+          <view class="watch-delete-action" :style="getWatchDeleteActionStyle(item.id)">
+            <view class="watch-delete-btn" @tap.stop="removeFromWatchlistAction(item)">
+              <image class="watch-delete-visual" src="/static/icons/delete_zx.svg" mode="aspectFit" />
+            </view>
+          </view>
+
+          <view
+            class="watch-card watch-card--swipeable"
+            :class="{ 'is-swipe-open': watchSwipeOpenId === item.id, 'is-swipe-dragging': watchTouchState.activeId === item.id && watchTouchState.lockDirection === 'horizontal' }"
+            :style="getWatchCardStyle(item.id)"
+            @tap="handleWatchCardTap(item)"
+            @touchstart.stop="onWatchTouchStart(item, $event)"
+            @touchmove.stop="onWatchTouchMove(item, $event)"
+            @touchend.stop="onWatchTouchEnd(item, $event)"
+            @touchcancel.stop="onWatchTouchCancel(item)"
+          >
+            <view class="watch-card-glow"></view>
+            <view class="watch-main">
+              <view class="watch-info">
+                <text class="watch-name">{{ item.fundName || '未命名基金' }}</text>
+                <view class="watch-meta">
+                  <text class="watch-code">{{ item.fundCode }}</text>
+                  <text class="watch-sector" v-if="item.sectors && item.sectors.length > 0">{{ item.sectors[0] }}</text>
+                </view>
+              </view>
+              <view class="watch-estimate-wrap">
+                <view class="watch-estimate">
+                  <text class="watch-rate" :class="item.todayRate >= 0 ? 'red' : 'green'">
+                    {{ formatTodayRate(item.todayRate) }}
+                  </text>
+                </view>
+                <view class="watch-swipe-hint" :class="{ 'is-hidden': watchSwipeOpenId === item.id }">
+                  <!-- #ifdef H5 -->
+                  <view :id="`watch-del-arrow-${item.id}`" class="watch-del-arrow-lottie"></view>
+                  <!-- #endif -->
+                  <!-- #ifdef MP-WEIXIN -->
+                  <canvas :id="`watch-del-arrow-${item.id}`" type="2d" class="watch-del-arrow-lottie"></canvas>
+                  <!-- #endif -->
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+
         <!-- 自选空状态 -->
         <view class="empty-state" v-if="watchlist.length === 0">
           <view class="empty-icon">⭐</view>
@@ -289,63 +373,6 @@
     <!-- 添加按钮 FAB -->
     <view class="fab" @tap="handleFabClick">
       <image class="fab-icon-svg" src="data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M526.507431 109.121602c-231.868047 0-419.788888 187.920841-419.788887 419.788888s187.920841 419.788888 419.788887 419.788888 419.788888-187.920841 419.788888-419.788888S758.375478 109.121602 526.507431 109.121602zM778.381173 545.702209H543.29915v233.967012h-33.583438V545.702209H275.7487v-33.583438h233.967012V277.036748h33.583438v235.082023H778.381173v33.583438z' fill='%2398C4D8'/%3E%3Cpath d='M492.923993 75.538164c-231.868047 0-419.788888 187.920841-419.788888 419.788887s187.920841 419.788888 419.788888 419.788888 419.788888-187.920841 419.788887-419.788888S724.792039 75.538164 492.923993 75.538164zM744.797735 512.118771H509.715712v233.967011h-33.583439V512.118771H242.166285v-33.583439h233.967012V243.453309h33.583439v235.082023H744.797735v33.583439z' fill='%23EFD9A0'/%3E%3Cpath d='M268.480057 288.159806a30.213832 64.203753 55.515 1 0 105.843026-72.703105 30.213832 64.203753 55.515 1 0-105.843026 72.703105Z' fill='%23FEFEFE'/%3E%3Cpath d='M203.600369 393.818901a20.142896 35.2493 55.515 1 0 58.110194-39.915635 20.142896 35.2493 55.515 1 0-58.110194 39.915635Z' fill='%23FEFEFE'/%3E%3C/svg%3E" mode="aspectFit" />
-    </view>
-
-    <!-- 添加自选弹窗 -->
-    <view class="modal-mask" v-if="showAddWatchModal" @tap="closeAddWatchModal">
-      <view class="modal-container add-watch-modal" @tap.stop>
-        <!-- 右上角缺口 -->
-        <view class="add-watch-corner">
-          <view class="corner-notch corner-tl"></view>
-          <view class="corner-notch corner-br"></view>
-          <view class="add-watch-close" @tap="closeAddWatchModal">
-            <image class="close-icon-svg" src="data:image/svg+xml,%3Csvg%20height%3D%22200px%22%20width%3D%22200px%22%20version%3D%221.1%22%20id%3D%22Layer_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%20502%20502%22%20xml%3Aspace%3D%22preserve%22%20fill%3D%22%23000000%22%3E%3Cg%20id%3D%22SVGRepo_bgCarrier%22%20stroke-width%3D%220%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_tracerCarrier%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_iconCarrier%22%3E%20%3Cg%3E%20%3Cg%3E%20%3Ccircle%20style%3D%22fill%3A%23dc704c%3B%22%20cx%3D%22251%22%20cy%3D%22251%22%20r%3D%22241%22%3E%3C%2Fcircle%3E%20%3Cpath%20d%3D%22M251%2C502c-67.045%2C0-130.076-26.108-177.483-73.517C26.108%2C381.076%2C0%2C318.045%2C0%2C251S26.108%2C120.924%2C73.517%2C73.517%20C120.924%2C26.108%2C183.955%2C0%2C251%2C0s130.076%2C26.108%2C177.483%2C73.517C475.892%2C120.924%2C502%2C183.955%2C502%2C251%20s-26.108%2C130.076-73.517%2C177.483C381.076%2C475.892%2C318.045%2C502%2C251%2C502z%20M251%2C20C123.626%2C20%2C20%2C123.626%2C20%2C251s103.626%2C231%2C231%2C231%20s231-103.626%2C231-231S378.374%2C20%2C251%2C20z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3Cg%3E%20%3Cpath%20style%3D%22fill%3A%23D1DCEB%3B%22%20d%3D%22M281.291%2C249l76.729-76.729c8.641-8.641%2C8.641-22.651%2C0-31.291c-8.641-8.641-22.651-8.641-31.291%2C0%20L250%2C217.709l-76.729-76.729c-8.641-8.641-22.651-8.641-31.291%2C0c-8.641%2C8.641-8.641%2C22.651%2C0%2C31.291L218.709%2C249l-76.729%2C76.729%20c-8.641%2C8.641-8.641%2C22.651%2C0%2C31.291c4.32%2C4.32%2C9.984%2C6.48%2C15.646%2C6.48s11.325-2.16%2C15.646-6.48L250%2C280.291l76.729%2C76.729%20c4.32%2C4.32%2C9.984%2C6.48%2C15.646%2C6.48s11.325-2.16%2C15.646-6.48c8.641-8.641%2C8.641-22.651%2C0-31.291L281.291%2C249z%22%3E%3C%2Fpath%3E%20%3Cpath%20d%3D%22M342.374%2C373.5c-8.582%2C0-16.649-3.341-22.717-9.408L250%2C294.434l-69.657%2C69.658c-6.067%2C6.067-14.135%2C9.408-22.717%2C9.408%20c-8.581%2C0-16.648-3.341-22.717-9.407c-12.527-12.527-12.527-32.909-0.001-45.436L204.566%2C249l-69.658-69.657%20c-12.525-12.526-12.525-32.907%2C0-45.434c6.068-6.068%2C14.137-9.41%2C22.718-9.41s16.649%2C3.343%2C22.717%2C9.411L250%2C203.566%20l69.657-69.657c6.067-6.067%2C14.136-9.41%2C22.717-9.41s16.649%2C3.342%2C22.718%2C9.41c12.525%2C12.526%2C12.525%2C32.907%2C0%2C45.434L295.434%2C249%20l69.658%2C69.657c12.526%2C12.526%2C12.526%2C32.908%2C0%2C45.435C359.022%2C370.159%2C350.955%2C373.5%2C342.374%2C373.5z%20M250%2C270.291%20c2.652%2C0%2C5.195%2C1.054%2C7.071%2C2.929l76.729%2C76.729c2.289%2C2.29%2C5.335%2C3.551%2C8.574%2C3.551c3.24%2C0%2C6.285-1.262%2C8.576-3.552%20c4.728-4.728%2C4.728-12.421-0.001-17.148l-76.729-76.729c-1.875-1.876-2.929-4.419-2.929-7.071s1.054-5.195%2C2.929-7.071%20l76.729-76.729c4.729-4.728%2C4.729-12.421%2C0-17.148c-2.29-2.291-5.336-3.553-8.575-3.553s-6.284%2C1.262-8.574%2C3.552l-76.729%2C76.729%20c-3.906%2C3.904-10.236%2C3.904-14.143%2C0L166.2%2C148.052c-2.29-2.291-5.335-3.553-8.574-3.553s-6.285%2C1.262-8.575%2C3.553%20c-4.729%2C4.728-4.729%2C12.421%2C0%2C17.148l76.729%2C76.729c1.875%2C1.876%2C2.929%2C4.419%2C2.929%2C7.071s-1.054%2C5.195-2.929%2C7.071L149.051%2C332.8%20c-4.729%2C4.728-4.729%2C12.421%2C0%2C17.149c2.29%2C2.289%2C5.335%2C3.551%2C8.575%2C3.551c3.239%2C0%2C6.285-1.261%2C8.574-3.551l76.729-76.729%20C244.805%2C271.345%2C247.348%2C270.291%2C250%2C270.291z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3Cg%3E%20%3Cpath%20d%3D%22M50%2C261c-5.522%2C0-10-4.478-10-10c0-39.687%2C11.081-78.358%2C32.045-111.836c20.387-32.557%2C49.233-58.957%2C83.422-76.346%20c4.92-2.506%2C10.942-0.544%2C13.446%2C4.38c2.504%2C4.922%2C0.543%2C10.942-4.38%2C13.446C100.055%2C113.44%2C60%2C178.717%2C60%2C251%20C60%2C256.522%2C55.522%2C261%2C50%2C261z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3Cg%3E%20%3Cpath%20d%3D%22M209.99%2C64.187c-4.641%2C0-8.802-3.249-9.781-7.973c-1.121-5.408%2C2.354-10.7%2C7.763-11.821C222.036%2C41.478%2C236.513%2C40%2C251%2C40%20c5.522%2C0%2C10%2C4.478%2C10%2C10s-4.478%2C10-10%2C10c-13.127%2C0-26.238%2C1.338-38.97%2C3.977C211.346%2C64.118%2C210.663%2C64.187%2C209.99%2C64.187z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3C%2Fg%3E%20%3C%2Fg%3E%3C%2Fsvg%3E" mode="aspectFit" />
-          </view>
-        </view>
-        <view class="add-watch-header">
-          <text class="add-watch-title">添加自选基金</text>
-        </view>
-        
-        <view class="add-watch-body">
-          <view class="add-watch-input-wrap">
-            <input 
-              class="add-watch-input" 
-              v-model="watchSearchKeyword" 
-              placeholder="输入基金代码或名称" 
-              placeholder-class="input-placeholder"
-              @input="onWatchSearchInput"
-            />
-          </view>
-          
-          <!-- 搜索结果列表 -->
-          <scroll-view class="watch-search-list" scroll-y v-if="watchSearchResults.length > 0">
-            <view 
-              class="search-result-item" 
-              v-for="item in watchSearchResults" 
-              :key="item.code"
-              @tap="selectWatchFund(item)"
-            >
-              <view class="result-main">
-                <text class="result-name">{{ item.name }}</text>
-                <text class="result-code">{{ item.code }}</text>
-              </view>
-              <view class="result-action">
-                <image class="result-action-icon" src="data:image/svg+xml,%3Csvg%20height%3D%22200px%22%20width%3D%22200px%22%20version%3D%221.1%22%20id%3D%22Layer_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%20511.998%20511.998%22%20xml%3Aspace%3D%22preserve%22%20fill%3D%22%23000000%22%3E%3Cg%20id%3D%22SVGRepo_bgCarrier%22%20stroke-width%3D%220%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_tracerCarrier%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_iconCarrier%22%3E%20%3Ccircle%20style%3D%22fill%3A%23fe8671%3B%22%20cx%3D%22256.002%22%20cy%3D%22256.001%22%20r%3D%22247.612%22%3E%3C%2Fcircle%3E%20%3Cpath%20style%3D%22opacity%3A0.1%3Benable-background%3Anew%20%3B%22%20d%3D%22M64.319%2C255.998c0-127.294%2C96.063-232.134%2C219.645-246.028%20c-9.181-1.032-18.508-1.582-27.965-1.582c-136.75%2C0-247.61%2C110.859-247.61%2C247.61s110.858%2C247.61%2C247.61%2C247.61%20c9.457%2C0%2C18.783-0.549%2C27.965-1.582C160.382%2C488.134%2C64.319%2C383.293%2C64.319%2C255.998z%22%3E%3C%2Fpath%3E%20%3Cpolygon%20style%3D%22fill%3A%23FFFFFF%3B%22%20points%3D%22404.963%2C211.407%20300.592%2C211.407%20300.592%2C107.035%20211.408%2C107.035%20211.408%2C211.407%20107.037%2C211.407%20107.037%2C300.591%20211.408%2C300.591%20211.408%2C404.963%20300.592%2C404.963%20300.592%2C300.591%20404.963%2C300.591%20%22%3E%3C%2Fpolygon%3E%20%3Cpath%20d%3D%22M255.999%2C511.998c-68.381%2C0-132.668-26.629-181.019-74.979C26.629%2C388.666%2C0%2C324.378%2C0%2C255.998%20c0-36.75%2C7.624-72.228%2C22.662-105.45c14.525-32.09%2C35.169-60.412%2C61.359-84.178c3.432-3.114%2C8.738-2.857%2C11.85%2C0.575%20c3.114%2C3.431%2C2.857%2C8.737-0.575%2C11.85c-49.898%2C45.282-78.518%2C109.868-78.518%2C177.202c0%2C63.899%2C24.883%2C123.972%2C70.067%2C169.155%20c45.183%2C45.182%2C105.256%2C70.065%2C169.155%2C70.065c54.064%2C0%2C105.073-17.594%2C147.511-50.884c3.647-2.86%2C8.921-2.22%2C11.779%2C1.423%20c2.86%2C3.645%2C2.221%2C8.92-1.423%2C11.779C368.445%2C493.165%2C313.855%2C511.998%2C255.999%2C511.998z%22%3E%3C%2Fpath%3E%20%3Cpath%20d%3D%22M116.4%2C59.876c-2.677%2C0-5.306-1.279-6.931-3.653c-2.604-3.807-1.648-8.997%2C2.133-11.626%20c3.719-2.64%2C8.887-1.822%2C11.607%2C1.867c2.748%2C3.731%2C1.952%2C8.982-1.777%2C11.731c-0.078%2C0.058-0.22%2C0.159-0.302%2C0.213%20C119.681%2C59.401%2C118.032%2C59.876%2C116.4%2C59.876z%22%3E%3C%2Fpath%3E%20%3Cpath%20d%3D%22M433.487%2C437.015c-2.109%2C0-4.218-0.79-5.849-2.376c-3.321-3.232-3.395-8.543-0.163-11.863%20c43.687-44.908%2C67.745-104.138%2C67.745-166.777c0-63.898-24.883-123.971-70.067-169.154S319.897%2C16.779%2C255.998%2C16.779%20c-48.378%2C0-94.988%2C14.377-134.79%2C41.575c-3.827%2C2.612-9.045%2C1.631-11.66-2.194c-2.614-3.826-1.632-9.046%2C2.194-11.66%20C154.345%2C15.389%2C204.228%2C0%2C255.998%2C0c68.38%2C0%2C132.668%2C26.629%2C181.019%2C74.981s74.981%2C112.638%2C74.981%2C181.018%20c0%2C67.034-25.748%2C130.418-72.498%2C178.476C437.857%2C436.166%2C435.673%2C437.015%2C433.487%2C437.015z%22%3E%3C%2Fpath%3E%20%3Cpath%20d%3D%22M300.592%2C413.351h-89.184c-4.634%2C0-8.389-3.755-8.389-8.389v-95.982h-95.982c-4.634%2C0-8.389-3.755-8.389-8.389v-89.184%20c0-4.634%2C3.755-8.389%2C8.389-8.389h95.982v-95.981c0-4.634%2C3.755-8.389%2C8.389-8.389h89.184c4.634%2C0%2C8.389%2C3.755%2C8.389%2C8.389v95.982%20h95.982c4.634%2C0%2C8.389%2C3.755%2C8.389%2C8.389v89.184c0%2C4.634-3.755%2C8.389-8.389%2C8.389h-95.982v95.982%20C308.982%2C409.596%2C305.225%2C413.351%2C300.592%2C413.351z%20M219.797%2C396.572h72.406V300.59c0-4.634%2C3.755-8.389%2C8.389-8.389h95.982v-72.406%20h-95.982c-4.634%2C0-8.389-3.755-8.389-8.389v-95.982h-72.406v95.982c0%2C4.634-3.755%2C8.389-8.389%2C8.389h-95.982v72.406h95.982%20c4.634%2C0%2C8.389%2C3.755%2C8.389%2C8.389L219.797%2C396.572L219.797%2C396.572z%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%3C%2Fsvg%3E" mode="aspectFit" />
-              </view>
-            </view>
-          </scroll-view>
-          
-          <!-- 搜索中 -->
-          <view class="watch-search-loading" v-if="watchSearchLoading">
-            <text class="loading-text">搜索中...</text>
-          </view>
-          
-          <!-- 无结果 -->
-          <view class="watch-search-empty" v-if="watchSearchEmpty">
-            <text class="empty-text">未找到相关基金</text>
-          </view>
-        </view>
-      </view>
     </view>
 
     <!-- 底部导航占位 -->
@@ -395,6 +422,7 @@ export default {
       },
       showDeleteModal: false,
       showAddWatchModal: false,
+      isClosingAddWatch: false,
       watchSearchKeyword: '',
       watchSearchResults: [],
       watchSearchLoading: false,
@@ -403,6 +431,19 @@ export default {
       deleteTarget: null,
       sortOrder: 'down',
       sortType: 'total',
+      watchSwipeOpenId: '',
+      watchSwipeOffsets: {},
+      watchDeletingMap: {},
+      watchTouchState: {
+        activeId: '',
+        startX: 0,
+        startY: 0,
+        startOffset: 0,
+        currentOffset: 0,
+        isSwiping: false,
+        didMove: false,
+        lockDirection: ''
+      },
       sortOptions: [
         { value: 'total', label: '总涨跌幅' },
         { value: 'today', label: '今日涨跌幅' }
@@ -460,8 +501,9 @@ export default {
         Promise.all([
           import('@/static/icons/piggy-saving.json'),
           import('@/static/icons/stock.json'),
-          import('@/static/icons/rollup.json')
-        ]).then(([piggySavingData, stockData, rollupData]) => {
+          import('@/static/icons/rollup.json'),
+          import('@/static/icons/del_arrow.json')
+        ]).then(([piggySavingData, stockData, rollupData, delArrowData]) => {
           // 加载 piggy-saving 动画
           lottie.default.loadAnimation({
             container: document.getElementById('lottie-canvas'),
@@ -470,7 +512,7 @@ export default {
             autoplay: true,
             animationData: piggySavingData.default
           })
-          
+
           // 加载 stock 动画
           lottie.default.loadAnimation({
             container: document.getElementById('stock-lottie-canvas'),
@@ -479,7 +521,7 @@ export default {
             autoplay: true,
             animationData: stockData.default
           })
-          
+
           // 加载 rollup 动画
           lottie.default.loadAnimation({
             container: document.getElementById('rollup-lottie-canvas'),
@@ -488,6 +530,8 @@ export default {
             autoplay: false,
             animationData: rollupData.default
           })
+
+          this.initWatchSwipeHintLottieH5(lottie.default, delArrowData.default)
         }).catch(err => {
           console.error('加载lottie动画失败:', err)
         })
@@ -575,12 +619,12 @@ export default {
           if (res && res[0]) {
             const canvas = res[0].node
             const ctx = canvas.getContext('2d')
-            
+
             const dpr = 3
             canvas.width = 48 * dpr
             canvas.height = 48 * dpr
             ctx.scale(dpr, dpr)
-            
+
             uni.request({
               url: '/static/icons/rollup.json',
               success: (response) => {
@@ -602,16 +646,235 @@ export default {
             })
           }
         })
+
+      uni.request({
+        url: '/static/icons/del_arrow.json',
+        success: (response) => {
+          this.initWatchSwipeHintLottieMp(response.data)
+        },
+        fail: (err) => {
+          console.error('加载del_arrow动画失败:', err)
+        }
+      })
       // #endif
+    },
+
+    initWatchSwipeHintLottieH5(lottie, animationData) {
+      this.$nextTick(() => {
+        const ids = this.watchlist.map(item => `watch-del-arrow-${item.id}`)
+        ids.forEach(id => {
+          const container = document.getElementById(id)
+          if (!container || container.dataset.lottieReady === '1') return
+          lottie.loadAnimation({
+            container,
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            animationData
+          })
+          container.dataset.lottieReady = '1'
+        })
+      })
+    },
+
+    initWatchSwipeHintLottieMp(animationData) {
+      this.$nextTick(() => {
+        const lottie = require('lottie-miniprogram')
+        this.watchlist.forEach(item => {
+          const query = uni.createSelectorQuery().in(this)
+          query.select(`#watch-del-arrow-${item.id}`)
+            .fields({ node: true, size: true })
+            .exec((res) => {
+              if (!res || !res[0] || !res[0].node) return
+              const canvas = res[0].node
+              if (canvas.__watchArrowReady) return
+              const ctx = canvas.getContext('2d')
+              const dpr = 2
+              canvas.width = 56 * dpr
+              canvas.height = 56 * dpr
+              ctx.scale(dpr, dpr)
+              lottie.loadAnimation({
+                loop: true,
+                autoplay: true,
+                animationData,
+                rendererSettings: {
+                  context: ctx,
+                  canvas,
+                  clearCanvas: true
+                }
+              })
+              canvas.__watchArrowReady = true
+            })
+        })
+      })
     },
     
     switchTab(tab) {
       this.currentTab = tab
+      this.closeAllWatchSwipes()
       if (tab === 'watchlist' && this.watchlist.length > 0) {
         this.refreshWatchlistEstimates()
       }
     },
-    
+
+    getWatchDeleteWidth() {
+      return 132
+    },
+
+    getTouchPoint(e) {
+      const point = (e.changedTouches && e.changedTouches[0]) || (e.touches && e.touches[0]) || e
+      return {
+        x: point?.clientX ?? 0,
+        y: point?.clientY ?? 0
+      }
+    },
+
+    getWatchCardStyle(id) {
+      const offset = this.watchSwipeOffsets[id] || 0
+      return `transform: translateX(${offset}rpx);`
+    },
+
+    getWatchDeleteActionStyle(id) {
+      const deleteWidth = this.getWatchDeleteWidth()
+      const offset = Math.abs(this.watchSwipeOffsets[id] || 0)
+      const progress = Math.max(0, Math.min(1, offset / deleteWidth))
+      const opacity = 0.18 + progress * 0.82
+      const scale = 0.95 + progress * 0.05
+      const iconOpacity = 0.35 + progress * 0.65
+      const iconScale = 0.9 + progress * 0.1
+      return `opacity: ${opacity}; transform: scale(${scale}); --delete-icon-opacity: ${iconOpacity}; --delete-icon-scale: ${iconScale};`
+    },
+    closeWatchSwipe(id) {
+      if (!id) return
+      this.watchSwipeOffsets = {
+        ...this.watchSwipeOffsets,
+        [id]: 0
+      }
+      if (this.watchSwipeOpenId === id) {
+        this.watchSwipeOpenId = ''
+      }
+    },
+
+    closeAllWatchSwipes() {
+      if (!this.watchSwipeOpenId && Object.keys(this.watchSwipeOffsets).length === 0) return
+      const reset = {}
+      Object.keys(this.watchSwipeOffsets).forEach(id => {
+        reset[id] = 0
+      })
+      this.watchSwipeOffsets = reset
+      this.watchSwipeOpenId = ''
+      this.watchTouchState = {
+        activeId: '',
+        startX: 0,
+        startY: 0,
+        startOffset: 0,
+        currentOffset: 0,
+        isSwiping: false,
+        didMove: false,
+        lockDirection: ''
+      }
+    },
+
+    handleWatchCardTap(item) {
+      if (this.watchTouchState.didMove) {
+        this.watchTouchState.didMove = false
+        return
+      }
+
+      if (this.watchSwipeOpenId) {
+        this.closeAllWatchSwipes()
+        return
+      }
+
+      this.goDetail(item)
+    },
+
+    onWatchTouchStart(item, e) {
+      const point = this.getTouchPoint(e)
+      const activeId = item.id
+      const currentOffset = this.watchSwipeOffsets[activeId] || 0
+
+      if (this.watchSwipeOpenId && this.watchSwipeOpenId !== activeId) {
+        this.closeAllWatchSwipes()
+      }
+
+      this.watchTouchState = {
+        activeId,
+        startX: point.x,
+        startY: point.y,
+        startOffset: currentOffset,
+        currentOffset,
+        isSwiping: false,
+        didMove: false,
+        lockDirection: ''
+      }
+    },
+
+    onWatchTouchMove(item, e) {
+      if (this.watchTouchState.activeId !== item.id) return
+
+      const point = this.getTouchPoint(e)
+      const deltaX = point.x - this.watchTouchState.startX
+      const deltaY = point.y - this.watchTouchState.startY
+      const absX = Math.abs(deltaX)
+      const absY = Math.abs(deltaY)
+
+      if (!this.watchTouchState.lockDirection) {
+        if (absX < 8 && absY < 8) return
+        this.watchTouchState.lockDirection = absX > absY ? 'horizontal' : 'vertical'
+      }
+
+      if (this.watchTouchState.lockDirection !== 'horizontal') return
+
+      const deleteWidth = this.getWatchDeleteWidth()
+      const nextOffset = Math.min(0, Math.max(-deleteWidth, this.watchTouchState.startOffset + deltaX))
+      this.watchTouchState.isSwiping = true
+      this.watchTouchState.didMove = true
+      this.watchTouchState.currentOffset = nextOffset
+      this.watchSwipeOffsets = {
+        ...this.watchSwipeOffsets,
+        [item.id]: nextOffset
+      }
+    },
+
+    onWatchTouchEnd(item) {
+      if (this.watchTouchState.activeId !== item.id) return
+
+      if (this.watchTouchState.lockDirection !== 'horizontal' || !this.watchTouchState.isSwiping) {
+        this.watchTouchState.activeId = ''
+        return
+      }
+
+      const deleteWidth = this.getWatchDeleteWidth()
+      const threshold = deleteWidth * 0.4
+      const currentOffset = this.watchTouchState.currentOffset
+      const shouldOpen = Math.abs(currentOffset) > threshold
+      const finalOffset = shouldOpen ? -deleteWidth : 0
+
+      this.watchSwipeOffsets = {
+        ...this.watchSwipeOffsets,
+        [item.id]: finalOffset
+      }
+      this.watchSwipeOpenId = shouldOpen ? item.id : ''
+      this.watchTouchState.activeId = ''
+      this.watchTouchState.currentOffset = finalOffset
+      this.watchTouchState.isSwiping = false
+    },
+
+    onWatchTouchCancel(item) {
+      if (this.watchTouchState.activeId !== item.id) return
+      if (this.watchSwipeOpenId === item.id) {
+        this.watchSwipeOffsets = {
+          ...this.watchSwipeOffsets,
+          [item.id]: -this.getWatchDeleteWidth()
+        }
+      } else {
+        this.closeWatchSwipe(item.id)
+      }
+      this.watchTouchState.activeId = ''
+      this.watchTouchState.isSwiping = false
+    },
+
     toggleCardsCollapse() {
       this.isCardsCollapsed = !this.isCardsCollapsed
     },
@@ -619,11 +882,29 @@ export default {
     async loadData() {
       this.holdings = getHoldings()
       this.watchlist = getWatchlist()
+      this.closeAllWatchSwipes()
       this.calculateTotalStats()
-      
+
       if (this.holdings.length > 0) {
         await this.refreshAll()
       }
+
+      // #ifdef H5
+      import('lottie-web').then(lottie => {
+        import('@/static/icons/del_arrow.json').then(delArrowData => {
+          this.initWatchSwipeHintLottieH5(lottie.default, delArrowData.default)
+        })
+      })
+      // #endif
+
+      // #ifdef MP-WEIXIN
+      uni.request({
+        url: '/static/icons/del_arrow.json',
+        success: (response) => {
+          this.initWatchSwipeHintLottieMp(response.data)
+        }
+      })
+      // #endif
     },
     
     calculateTotalStats() {
@@ -808,20 +1089,28 @@ export default {
     },
     
     removeFromWatchlistAction(item) {
-      uni.showModal({
-        title: '确认移除',
-        content: `确定要将「${item.fundName || '未命名基金'}」从自选中移除吗？`,
-        success: (res) => {
-          if (res.confirm) {
-            removeFromWatchlist(item.id)
-            this.watchlist = getWatchlist()
-            uni.showToast({
-              title: '已移除',
-              icon: 'success'
-            })
-          }
-        }
-      })
+      if (this.watchDeletingMap[item.id]) return
+
+      this.watchDeletingMap = {
+        ...this.watchDeletingMap,
+        [item.id]: true
+      }
+      this.watchSwipeOpenId = ''
+      this.watchSwipeOffsets = {
+        ...this.watchSwipeOffsets,
+        [item.id]: -this.getWatchDeleteWidth() - 28
+      }
+
+      setTimeout(() => {
+        removeFromWatchlist(item.id)
+        this.watchlist = getWatchlist()
+        const nextOffsets = { ...this.watchSwipeOffsets }
+        const nextDeletingMap = { ...this.watchDeletingMap }
+        delete nextOffsets[item.id]
+        delete nextDeletingMap[item.id]
+        this.watchSwipeOffsets = nextOffsets
+        this.watchDeletingMap = nextDeletingMap
+      }, 260)
     },
     
     handleFabClick() {
@@ -841,7 +1130,7 @@ export default {
     goDetail(item) {
       const code = item.fundCode
       uni.navigateTo({
-        url: `/pages/detail/detail?code=${code}`
+        url: `/pages/detail/detail?code=${code}&name=${encodeURIComponent(item.fundName || '未命名基金')}`
       })
     },
     
@@ -854,11 +1143,18 @@ export default {
     },
     
     closeAddWatchModal() {
-      this.showAddWatchModal = false
-      this.watchSearchCode = ''
-      this.watchSearchResult = null
-      this.watchSearchLoading = false
-      this.watchSearchEmpty = false
+      // 开始关闭动画
+      this.isClosingAddWatch = true
+      
+      // 等待动画完成后真正关闭
+      setTimeout(() => {
+        this.showAddWatchModal = false
+        this.isClosingAddWatch = false
+        this.watchSearchKeyword = ''
+        this.watchSearchResults = []
+        this.watchSearchLoading = false
+        this.watchSearchEmpty = false
+      }, 500) // 动画时长 500ms
     },
     
     onWatchSearchInput() {
@@ -954,7 +1250,6 @@ export default {
   height: 100vh;
   padding: 32rpx;
   position: relative;
-  // overflow: hidden;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -1042,31 +1337,169 @@ export default {
   overflow: hidden;
 }
 
+.watch-swipe-item {
+  position: relative;
+  margin-bottom: 16rpx;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transform-origin: center top;
+  transition: margin-bottom 0.38s cubic-bezier(0.2, 0.78, 0.24, 1), opacity 0.26s ease;
+
+  &.is-deleting {
+    margin-bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.watch-delete-action {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 132rpx;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  opacity: 0.18;
+  transform: scale(0.95);
+  transform-origin: right center;
+  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.22, 0.8, 0.24, 1);
+
+  .watch-swipe-item.is-deleting & {
+    opacity: 0;
+    transform: translate3d(16rpx, 0, 0) scale(0.9);
+    transition: opacity 0.18s ease, transform 0.2s ease;
+  }
+}
+
+.watch-delete-btn {
+  width: 132rpx;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(243, 122, 98, 0.84) 0%, rgba(223, 94, 71, 0.88) 100%);
+}
+
+.watch-delete-visual {
+  width: 92rpx;
+  height: 92rpx;
+  opacity: var(--delete-icon-opacity, 0.35);
+  transform: scale(var(--delete-icon-scale, 0.9));
+  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.22, 0.8, 0.24, 1);
+}
+
 .watch-card {
-  background: $glass-bg;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 14%, rgba(255, 255, 255, 0.16), transparent 24%),
+    radial-gradient(circle at 88% 16%, rgba(255, 255, 255, 0.08), transparent 22%),
+    linear-gradient(180deg, #fff6e7 0%, #f7ebc9 100%);
   border: 1px solid $border-card;
   border-radius: $radius-lg;
   backdrop-filter: $glass-blur;
   -webkit-backdrop-filter: $glass-blur;
   padding: 24rpx 28rpx;
-  margin-bottom: 16rpx;
   box-shadow: $shadow-sm;
   transition: all 0.2s ease;
-  
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  &::before {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 22rpx 22rpx;
+    opacity: 0.22;
+  }
+
+  &::after {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 28%);
+    opacity: 0.9;
+  }
+
   &:active {
-    transform: scale(0.98);
     opacity: 0.9;
   }
 }
 
+.watch-card--swipeable {
+  margin-bottom: 0;
+  transition: transform 0.28s cubic-bezier(0.22, 0.8, 0.24, 1), box-shadow 0.28s cubic-bezier(0.22, 0.8, 0.24, 1), opacity 0.2s ease;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+
+  .watch-swipe-item.is-deleting & {
+    opacity: 0;
+    transform: translate3d(-172rpx, 0, 0) scale(0.92);
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease;
+  }
+
+  &.is-swipe-dragging {
+    transition: none;
+  }
+
+  &.is-swipe-open {
+    box-shadow: 0 16rpx 36rpx rgba(80, 49, 21, 0.16);
+  }
+}
+
+
+.watch-card-glow,
+.watch-card-glow::before,
+.watch-card-glow::after {
+  content: '';
+  position: absolute;
+  border-radius: 999rpx;
+  filter: blur(56rpx);
+  pointer-events: none;
+}
+
+.watch-card-glow {
+  width: 300rpx;
+  height: 300rpx;
+  top: -56rpx;
+  right: -44rpx;
+  background: rgba(255, 176, 120, 0.16);
+}
+
+.watch-card-glow::before {
+  width: 220rpx;
+  height: 220rpx;
+  left: -416rpx;
+  top: 364rpx;
+  background: rgba(255, 226, 160, 0.14);
+}
+
+.watch-card-glow::after {
+  width: 240rpx;
+  height: 240rpx;
+  left: -72rpx;
+  top: 728rpx;
+  background: rgba(255, 188, 136, 0.10);
+}
+
 .watch-main {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 24rpx;
 }
 
 .watch-info {
   flex: 1;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -1101,40 +1534,53 @@ export default {
   border-radius: 8rpx;
 }
 
+.watch-estimate-wrap {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 14rpx;
+}
+
 .watch-estimate {
   text-align: right;
+}
+
+.watch-swipe-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72rpx;
+  min-width: 72rpx;
+  opacity: 0.55;
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: blur(0);
+  will-change: opacity, transform, filter;
+  transition: opacity 0.24s cubic-bezier(0.18, 0.82, 0.3, 1), transform 0.26s cubic-bezier(0.18, 0.82, 0.3, 1), filter 0.22s ease-out;
+
+  &.is-hidden {
+    opacity: 0;
+    transform: translate3d(10rpx, 0, 0) scale(0.92);
+    filter: blur(4rpx);
+    pointer-events: none;
+    transition: opacity 0.36s cubic-bezier(0.22, 0.8, 0.24, 1), transform 0.38s cubic-bezier(0.22, 0.8, 0.24, 1), filter 0.32s ease;
+  }
+}
+
+.watch-del-arrow-lottie {
+  width: 56rpx;
+  height: 56rpx;
 }
 
 .watch-rate {
   font-size: 36rpx;
   font-weight: 700;
-  
+
   &.red {
     color: $up-color;
   }
-  
+
   &.green {
     color: $down-color;
-  }
-}
-
-.watch-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16rpx;
-  padding-top: 16rpx;
-  border-top: 1px solid rgba(180, 130, 70, 0.1);
-}
-
-.watch-action-btn {
-  padding: 8rpx 24rpx;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 12rpx;
-  
-  .watch-action-text {
-    font-size: 24rpx;
-    color: #ef4444;
   }
 }
 
@@ -1143,101 +1589,202 @@ export default {
   color: $text-tertiary;
 }
 
-.add-watch-modal {
-  --gap-action: 12rpx;
-  --sz-action: 72rpx;
-  --round-card: calc(var(--sz-action) / 2 + calc(var(--gap-action) / 2));
-  
-  width: 600rpx;
-  border-radius: var(--round-card);
+// 嵌入式添加自选基金
+.add-watch-embed {
+  margin-bottom: 34rpx;
+  animation: embedSlideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.add-watch-embed-closing {
+  animation: embedSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes embedSlideDown {
+  0% {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-20rpx);
+  }
+  100% {
+    opacity: 1;
+    max-height: 800rpx;
+    transform: translateY(0);
+  }
+}
+
+@keyframes embedSlideUp {
+  0% {
+    opacity: 1;
+    max-height: 800rpx;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-20rpx);
+  }
+}
+
+.add-watch-modal-content {
+  --gap-action: 14rpx;
+  --sz-action: 76rpx;
+  --round-card: 34rpx;
+  --shell-bg: #eeb3b3;
+  --shell-stroke: #000;
+  --card-bg: #8ed38a;
+  --card-bg-deep: #79c276;
+  --card-stroke: #111;
+
+  width: 100%;
+  border-radius: 44rpx;
   overflow: visible;
   position: relative;
-  background: #fffcf5;
-  box-shadow: 0 10px 40px rgba(217, 119, 6, 0.15);
+  background: var(--shell-bg);
+  border: 4rpx solid var(--shell-stroke);
+  box-shadow: 0 18rpx 0 rgba(0, 0, 0, 0.9);
+  padding: 18rpx;
 }
 
-// 右上角缺口 - 参考新方案
-.add-watch-corner {
-  position: absolute;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  height: auto;
-  right: 0;
-  top: 0;
-  background: rgba(230, 225, 210, 0.7);
-  z-index: 5;
-  border-bottom-left-radius: var(--round-card);
-  padding-bottom: var(--gap-action);
-  padding-left: var(--gap-action);
-  gap: var(--gap-action);
+.add-watch-modal {
+  --gap-action: 14rpx;
+  --sz-action: 76rpx;
+  --round-card: 34rpx;
+
+  width: 600rpx;
+  border-radius: 44rpx;
+  overflow: visible;
+  position: relative;
+  background: var(--shell-bg, #101010);
+  border: 4rpx solid var(--shell-stroke, #000);
+  box-shadow: 0 18rpx 0 rgba(0, 0, 0, 0.9);
+  padding: 18rpx;
 }
 
-// 缺口圆角修饰
-.corner-notch {
-  position: absolute;
-  width: 50%;
-  height: 50%;
-  z-index: 6;
-  background: rgba(230, 225, 210, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.add-watch-shell {
+  position: relative;
+  border-radius: 30rpx;
+  // background: linear-gradient(45deg, var(--card-bg) 0%, var(--card-bg) 100%);
+      background: linear-gradient(45deg, #f5f5c6 0%, #ffe750 100%);
+  border: 4rpx solid #eeb3b3;
+  padding: 0 0 28rpx;
 }
 
-.corner-notch::before {
+.add-watch-shell::before {
   content: '';
   position: absolute;
-  width: 100%;
-  height: 100%;
-  border-top-right-radius: var(--round-card);
-  background: #fffcf5;
-  z-index: -1;
-}
-
-// tl 位置修饰（缺口左上角，left为负值制造缺口）
-.corner-tl {
-  left: -50%;
-  top: 0;
-}
-
-// br 位置修饰（缺口下方右侧）
-.corner-br {
+  top: 68rpx;
   right: 0;
-  top: 100%;
+  width: 28rpx;
+  height: 28rpx;
+  background: transparent;
+  border-top-right-radius: 40rpx;
+  box-shadow: 7rpx -7rpx 0 2px #eeb3b3;
+}
+
+.add-watch-notch-bar {
+  position: absolute;
+  top: -4rpx;
+  right: 0;
+  width: 100rpx;
+  height: 72rpx;
+  background: #eeb3b3;
+  border-bottom-left-radius: 28rpx;
+  transform: skew(14deg);
+  box-shadow: 6rpx -6rpx 0 0 #eeb3b3;
+  z-index: 4;
+}
+
+.add-watch-notch-bar::before {
+  content: '';
+  position: absolute;
+  top: 4rpx;
+  left: -27rpx;
+  width: 28rpx;
+  height: 28rpx;
+  background: transparent;
+  border-top-right-radius: 20rpx;
+  box-shadow: 8rpx -8rpx 0 4px #eeb3b3;
+}
+
+.add-watch-notch-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -6rpx;
+  width: 12rpx;
+  height: 72rpx;
+  background: var(--shell-bg);
+  transform: skew(-8deg);
+}
+
+.add-watch-corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 104rpx;
+  height: 88rpx;
+  z-index: 5;
+  pointer-events: none;
 }
 
 .add-watch-header {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: 60rpx 36rpx 24rpx;
+  padding: 26rpx 132rpx 38rpx 22rpx;
   width: 100%;
 }
 
 .add-watch-title {
-  font-size: 34rpx;
-  font-weight: 600;
-  color: $text-primary;
+  display: inline-flex;
+  align-items: center;
+  gap: 7rpx;
+  min-height: 44rpx;
+  padding: 0 14rpx;
+  border-radius: 999rpx;
+  border: 3rpx solid rgba(247, 232, 188, 0.66);
+  background: linear-gradient(180deg, rgba(255, 247, 230, 0.92) 0%, rgba(244, 223, 168, 0.70) 56%, rgba(226, 190, 110, 0.84) 100%);
+  box-shadow:
+    inset 0 2rpx 0 rgba(255, 255, 255, 0.56),
+    inset 0 -2rpx 0 rgba(177, 130, 55, 0.24),
+    0 5rpx 0 rgba(104, 58, 10, 0.18),
+    0 10rpx 18rpx rgba(0, 0, 0, 0.07);
+}
+
+.add-watch-title-dot {
+  width: 10rpx;
+  height: 10rpx;
+  margin-right: 5rpx;
+  border-radius: 50%;
+  background: #f05747;
+  box-shadow: 0 0 0 7rpx rgba(240, 87, 71, 0.16);
+  flex-shrink: 0;
+}
+
+.add-watch-title-text {
+  font-size: 20rpx;
+  font-weight: 900;
+  color: #3d2a1d;
+  letter-spacing: 0.6rpx;
+  line-height: 1;
 }
 
 .add-watch-close {
   cursor: pointer;
+  pointer-events: auto;
+  position: absolute;
+  top: -15rpx;
+  right: 10rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 999rpx;
   height: var(--sz-action);
   width: var(--sz-action);
-  border: none;
+  border: 4rpx solid #111;
   outline: none;
-  background-color: #fffcf5;
-  box-shadow: 
-    rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
-    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px,
-    rgba(0, 0, 0, 0.07) 0px 1px 2px,
-    rgba(0, 0, 0, 0.07) 0px 2px 4px;
+  background: #101010;
+  box-shadow: 0 8rpx 0 rgba(0, 0, 0, 0.35);
   z-index: 10;
 
   .close-icon-svg {
@@ -1246,27 +1793,31 @@ export default {
   }
 }
 
+.add-watch-body {
+  position: relative;
+  z-index: 1;
+  padding: 0 28rpx;
+}
 
 .add-watch-input-wrap {
   display: flex;
   align-items: center;
   gap: 16rpx;
-  margin-bottom: 32rpx;
 }
 
 .add-watch-input {
   width: 100%;
-  height: 88rpx;
-  background: rgba(255, 252, 247, 0.8);
-  border: 2rpx solid rgba(180, 130, 70, 0.15);
-  border-radius: $radius-lg;
+  height: 92rpx;
+  background: rgba(255, 255, 255, 0.18);
+  border: 4rpx solid #111;
+  border-radius: 24rpx;
   padding: 0 28rpx;
   font-size: 30rpx;
-  color: $text-primary;
+  color: #111;
   box-sizing: border-box;
-  
+
   .input-placeholder {
-    color: $text-tertiary;
+    color: rgba(17, 17, 17, 0.55);
   }
 }
 
@@ -1295,14 +1846,14 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 24rpx 28rpx;
-  background: rgba(255, 252, 247, 0.6);
-  border: 1px solid rgba(180, 130, 70, 0.12);
-  border-radius: $radius-lg;
-  margin-bottom: 12rpx;
-  
+  background: rgba(255, 255, 255, 0.2);
+  border: 4rpx solid #111;
+  border-radius: 24rpx;
+  margin-bottom: 14rpx;
+
   &:active {
-    background: rgba(255, 252, 247, 0.8);
-    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(2rpx);
   }
 }
 
@@ -1313,8 +1864,8 @@ export default {
 
 .result-name {
   font-size: 30rpx;
-  font-weight: 600;
-  color: $text-primary;
+  font-weight: 700;
+  color: #111;
   display: block;
   margin-bottom: 6rpx;
   overflow: hidden;
@@ -1324,7 +1875,7 @@ export default {
 
 .result-code {
   font-size: 24rpx;
-  color: $text-tertiary;
+  color: rgba(17, 17, 17, 0.65);
   font-family: 'SF Mono', 'Monaco', monospace;
 }
 
@@ -1350,13 +1901,14 @@ export default {
 .watch-search-empty {
   padding: 40rpx 0;
   text-align: center;
-  
+
   .loading-text,
   .empty-text {
     font-size: 28rpx;
-    color: $text-tertiary;
+    color: rgba(17, 17, 17, 0.65);
   }
 }
+
 
 .bg-grid {
   position: fixed;
@@ -1364,7 +1916,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
+  background-image:
     linear-gradient(rgba(180, 130, 70, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(180, 130, 70, 0.03) 1px, transparent 1px);
   background-size: 80rpx 80rpx;
@@ -1378,7 +1930,7 @@ export default {
   filter: blur(200rpx);
   pointer-events: none;
   z-index: 0;
-  
+
   &.bg-glow-1 {
     width: 700rpx;
     height: 700rpx;
@@ -1386,7 +1938,7 @@ export default {
     top: -240rpx;
     right: -160rpx;
   }
-  
+
   &.bg-glow-2 {
     width: 560rpx;
     height: 560rpx;
@@ -1394,7 +1946,7 @@ export default {
     bottom: 300rpx;
     left: -200rpx;
   }
-  
+
   &.bg-glow-3 {
     width: 400rpx;
     height: 400rpx;
@@ -2496,7 +3048,7 @@ export default {
 .modal-container {
   width: 580rpx;
   background: #fffcf5;
-  box-shadow: 0 10px 40px rgba(217, 119, 6, 0.15);
+  box-shadow: none;
   border-radius: 40rpx;
   padding: 48rpx 40rpx 40rpx;
   display: flex;
