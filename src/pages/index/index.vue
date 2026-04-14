@@ -176,9 +176,11 @@
       </view>
     </view>
 
-    <scroll-view class="holding-list" scroll-y v-show="currentTab === 'holdings'">
+    <scroll-view class="holding-list" scroll-y :scroll-top="holdingScrollTop" scroll-with-animation @scroll="onHoldingScroll" v-show="currentTab === 'holdings'">
       <view 
         class="holding-card" 
+        :id="'holding-' + item.id"
+        :class="{ 'holding-card--key-match': keyInputMatchId === item.id }"
         v-for="item in holdings" 
         :key="item.id"
       >
@@ -310,10 +312,11 @@
         </view>
       </view>
 
-    <scroll-view class="watchlist-container" scroll-y>
+    <scroll-view class="watchlist-container" scroll-y :scroll-top="watchlistScrollTop" scroll-with-animation @scroll="onWatchScroll">
         <view
           class="watch-swipe-item"
-          :class="{ 'is-deleting': !!watchDeletingMap[item.id] }"
+          :id="'watch-' + item.id"
+          :class="{ 'is-deleting': !!watchDeletingMap[item.id], 'watch-swipe-item--key-match': keyInputMatchId === item.id }"
           v-for="item in watchlistWithEstimate"
           :key="item.id"
         >
@@ -373,6 +376,11 @@
     <!-- 添加按钮 FAB -->
     <view class="fab" @tap="handleFabClick">
       <image class="fab-icon-svg" src="data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M526.507431 109.121602c-231.868047 0-419.788888 187.920841-419.788887 419.788888s187.920841 419.788888 419.788887 419.788888 419.788888-187.920841 419.788888-419.788888S758.375478 109.121602 526.507431 109.121602zM778.381173 545.702209H543.29915v233.967012h-33.583438V545.702209H275.7487v-33.583438h233.967012V277.036748h33.583438v235.082023H778.381173v33.583438z' fill='%2398C4D8'/%3E%3Cpath d='M492.923993 75.538164c-231.868047 0-419.788888 187.920841-419.788888 419.788887s187.920841 419.788888 419.788888 419.788888 419.788888-187.920841 419.788887-419.788888S724.792039 75.538164 492.923993 75.538164zM744.797735 512.118771H509.715712v233.967011h-33.583439V512.118771H242.166285v-33.583439h233.967012V243.453309h33.583439v235.082023H744.797735v33.583439z' fill='%23EFD9A0'/%3E%3Cpath d='M268.480057 288.159806a30.213832 64.203753 55.515 1 0 105.843026-72.703105 30.213832 64.203753 55.515 1 0-105.843026 72.703105Z' fill='%23FEFEFE'/%3E%3Cpath d='M203.600369 393.818901a20.142896 35.2493 55.515 1 0 58.110194-39.915635 20.142896 35.2493 55.515 1 0-58.110194 39.915635Z' fill='%23FEFEFE'/%3E%3C/svg%3E" mode="aspectFit" />
+    </view>
+
+    <!-- 键盘快速定位提示 -->
+    <view class="key-input-hint" v-if="keyInputHint" :class="{ 'key-input-hint--match': keyInputMatchId }">
+      <text class="key-input-hint-text">{{ keyInputHint }}</text>
     </view>
 
     <!-- 底部导航占位 -->
@@ -448,6 +456,11 @@ export default {
         { value: 'total', label: '总涨跌幅' },
         { value: 'today', label: '今日涨跌幅' }
       ],
+      // 键盘快速定位（响应式，用于模板绑定）
+      keyInputHint: '',
+      keyInputMatchId: '',
+      holdingScrollTop: '',
+      watchlistScrollTop: '',
       // 箭头 SVG
       arrowUpSvg: 'data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20transform%3D%22matrix%281%2C%200%2C%200%2C%20-1%2C%200%2C%200%29%22%3E%3Cg%20id%3D%22SVGRepo_bgCarrier%22%20stroke-width%3D%220%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_tracerCarrier%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_iconCarrier%22%3E%20%3Cg%20clip-path%3D%22url%28%23clip0_1076_36063%29%22%3E%20%3Cpath%20d%3D%22M12.4393%207.43933L8.49996%2011.3787L2.76773%205.64644C2.3772%205.25592%201.74404%205.25592%201.35352%205.64644L0.646409%206.35355C0.255885%206.74407%200.255885%207.37724%200.646409%207.76776L7.4393%2014.5607C8.02509%2015.1464%208.97484%2015.1464%209.56062%2014.5607L13.5%2010.6213L18.2322%2015.3535L16.2928%2017.2929C16.0068%2017.5789%2015.9212%2018.009%2016.076%2018.3827C16.2308%2018.7564%2016.5954%2019%2016.9999%2019H22.9999C23.5522%2019%2023.9999%2018.5523%2023.9999%2018V12C23.9999%2011.5955%2023.7562%2011.2309%2023.3826%2011.0761C23.0089%2010.9213%2022.5788%2011.0069%2022.2928%2011.2929L20.3535%2013.2322L14.5606%207.43933C13.9748%206.85355%2013.0251%206.85355%2012.4393%207.43933Z%22%20fill%3D%22%23cf203b%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3Cdefs%3E%20%3CclipPath%20id%3D%22clip0_1076_36063%22%3E%20%3Crect%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22white%22%3E%3C%2Frect%3E%20%3C%2FclipPath%3E%20%3C%2Fdefs%3E%20%3C%2Fg%3E%3C%2Fsvg%3E',
       arrowDownSvg: 'data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20id%3D%22SVGRepo_bgCarrier%22%20stroke-width%3D%220%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_tracerCarrier%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fg%3E%3Cg%20id%3D%22SVGRepo_iconCarrier%22%3E%20%3Cg%20clip-path%3D%22url(%23clip0_1076_36063)%22%3E%20%3Cpath%20d%3D%22M12.4393%207.43933L8.49996%2011.3787L2.76773%205.64644C2.3772%205.25592%201.74404%205.25592%201.35352%205.64644L0.646409%206.35355C0.255885%206.74407%200.255885%207.37724%200.646409%207.76776L7.4393%2014.5607C8.02509%2015.1464%208.97484%2015.1464%209.56062%2014.5607L13.5%2010.6213L18.2322%2015.3535L16.2928%2017.2929C16.0068%2017.5789%2015.9212%2018.009%2016.076%2018.3827C16.2308%2018.7564%2016.5954%2019%2016.9999%2019H22.9999C23.5522%2019%2023.9999%2018.5523%2023.9999%2018V12C23.9999%2011.5955%2023.7562%2011.2309%2023.3826%2011.0761C23.0089%2010.9213%2022.5788%2011.0069%2022.2928%2011.2929L20.3535%2013.2322L14.5606%207.43933C13.9748%206.85355%2013.0251%206.85355%2012.4393%207.43933Z%22%20fill%3D%22%2316a34a%22%3E%3C%2Fpath%3E%20%3C%2Fg%3E%20%3Cdefs%3E%20%3CclipPath%20id%3D%22clip0_1076_36063%22%3E%20%3Crect%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22white%22%3E%3C%2Frect%3E%20%3C%2FclipPath%3E%20%3C%2Fdefs%3E%20%3C%2Fg%3E%3C%2Fsvg%3E'
@@ -482,9 +495,24 @@ export default {
   },
   onReady() {
     this.initLottie()
+    // 键盘快速定位：非响应式内部状态（不触发渲染）
+    this._keyBuffer = ''
+    this._keyTimer = null
+    this._keyScrolling = false
+    this._keyLastInputTime = 0
+    this._holdingCurrentScrollTop = 0
+    this._watchCurrentScrollTop = 0
+    // #ifdef H5
+    this._keyHandler = this.onGlobalKeyDown.bind(this)
+    document.addEventListener('keydown', this._keyHandler)
+    // #endif
   },
   onHide() {
     // #ifdef H5
+    if (this._keyHandler) {
+      document.removeEventListener('keydown', this._keyHandler)
+      this._keyHandler = null
+    }
     // 恢复滚动
     // document.body.style.overflow = ''
     // document.documentElement.style.overflow = ''
@@ -1240,7 +1268,121 @@ export default {
           icon: 'none'
         })
       }
-    }
+    },
+    // 键盘快速定位：全局 keydown 处理
+    onGlobalKeyDown(e) {
+      // 忽略在 input/textarea 中的键盘输入
+      const tag = e.target?.tagName?.toLowerCase()
+      if (tag === 'input' || tag === 'textarea') return
+      // 忽略组合键
+      if (e.ctrlKey || e.altKey || e.metaKey) return
+
+      const key = e.key
+      // 只处理数字键（基金代码为纯数字）
+      if (/^\d$/.test(key)) {
+        e.preventDefault()
+        this._keyBuffer += key
+        this._keyLastInputTime = Date.now()
+        this.onKeyInputChange()
+      } else if (key === 'Escape') {
+        this.clearKeyInput()
+      } else if (key === 'Backspace' && this._keyBuffer.length > 0) {
+        e.preventDefault()
+        this._keyBuffer = this._keyBuffer.slice(0, -1)
+        if (this._keyBuffer.length > 0) {
+          this.onKeyInputChange()
+        } else {
+          this.clearKeyInput()
+        }
+      }
+    },
+    onKeyInputChange() {
+      const buffer = this._keyBuffer
+      // 根据当前 tab 查找匹配的基金
+      let matchItem = null
+      if (this.currentTab === 'holdings') {
+        matchItem = this.holdings.find(h => h.fundCode && h.fundCode.startsWith(buffer))
+      } else {
+        matchItem = this.watchlist.find(w => w.fundCode && w.fundCode.startsWith(buffer))
+      }
+
+      if (matchItem) {
+        this.keyInputMatchId = matchItem.id
+        this.keyInputHint = buffer + ' → ' + (matchItem.fundName || matchItem.fundCode)
+        // 标记程序触发的滚动，避免被 @scroll 误清除高亮
+        this._keyScrolling = true
+        // 用 createSelectorQuery 精确计算 scrollTop，确保卡片在可见区域最上方
+        const isHoldings = this.currentTab === 'holdings'
+        const selector = isHoldings ? '#holding-' + matchItem.id : '#watch-' + matchItem.id
+        const containerSelector = isHoldings ? '.holding-list' : '.watchlist-container'
+        const query = uni.createSelectorQuery().in(this)
+        query.select(containerSelector).boundingClientRect()
+        query.select(selector).boundingClientRect()
+        query.exec((res) => {
+          const container = res[0]
+          const target = res[1]
+          if (container && target) {
+            const offset = target.top - container.top
+            const scrollTop = (isHoldings ? this._holdingCurrentScrollTop : this._watchCurrentScrollTop) || 0
+            const newScrollTop = scrollTop + offset
+            // 先清空再设值，确保 scroll-top 变化能触发滚动
+            if (isHoldings) {
+              this.holdingScrollTop = ''
+              this.$nextTick(() => { this.holdingScrollTop = newScrollTop })
+            } else {
+              this.watchlistScrollTop = ''
+              this.$nextTick(() => { this.watchlistScrollTop = newScrollTop })
+            }
+          }
+        })
+        // 滚动动画约 300ms，之后恢复标记
+        setTimeout(() => { this._keyScrolling = false }, 500)
+        // 基金代码完整匹配后，2秒自动清除提示文字
+        if (matchItem.fundCode === buffer) {
+          if (this._keyTimer) clearTimeout(this._keyTimer)
+          this._keyTimer = setTimeout(() => {
+            this._keyBuffer = ''
+            this.keyInputHint = ''
+          }, 2000)
+        }
+      } else {
+        this.keyInputMatchId = ''
+        this.keyInputHint = buffer + ' (无匹配)'
+        // 无匹配时3秒自动清除，避免残留
+        if (this._keyTimer) clearTimeout(this._keyTimer)
+        this._keyTimer = setTimeout(() => {
+          this._keyBuffer = ''
+          this.keyInputHint = ''
+        }, 3000)
+      }
+    },
+    clearKeyInput() {
+      this._keyBuffer = ''
+      this.keyInputHint = ''
+      this.keyInputMatchId = ''
+      if (this._keyTimer) {
+        clearTimeout(this._keyTimer)
+        this._keyTimer = null
+      }
+    },
+    onHoldingScroll(e) {
+      this._holdingCurrentScrollTop = e.detail.scrollTop
+      // 只在用户真正手动滚动时清除高亮（非程序触发的滚动、非数据刷新导致的滚动）
+      if (!this._keyScrolling && this.keyInputMatchId) {
+        // 延迟检查：如果短时间内又有按键输入，说明是数据刷新引起的假滚动，不清除
+        if (this._keyLastInputTime && (Date.now() - this._keyLastInputTime < 800)) return
+        this.keyInputMatchId = ''
+        this.keyInputHint = ''
+      }
+    },
+    onWatchScroll(e) {
+      this._watchCurrentScrollTop = e.detail.scrollTop
+      if (!this._keyScrolling && this.keyInputMatchId) {
+        if (this._keyLastInputTime && (Date.now() - this._keyLastInputTime < 800)) return
+        this.keyInputMatchId = ''
+        this.keyInputHint = ''
+      }
+    },
   }
 }
 </script>
@@ -1349,6 +1491,13 @@ export default {
     margin-bottom: 0;
     opacity: 0;
     pointer-events: none;
+  }
+
+  &--key-match {
+    .watch-card {
+      border-color: rgba(218, 165, 32, 0.8);
+      box-shadow: 0 0 0 2px rgba(218, 165, 32, 0.3);
+    }
   }
 }
 
@@ -2757,6 +2906,12 @@ export default {
   margin-bottom: 20rpx;
   box-shadow: $shadow-sm;
   box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+  &--key-match {
+    border-color: rgba(218, 165, 32, 0.8);
+    box-shadow: 0 0 0 2px rgba(218, 165, 32, 0.3), $shadow-sm;
+  }
 }
 
 .holding-actions {
@@ -3022,6 +3177,42 @@ export default {
 
 .nav-placeholder {
   height: 120rpx;
+}
+
+.key-input-hint {
+  position: fixed;
+  bottom: 300rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(30, 30, 40, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20rpx;
+  padding: 16rpx 32rpx;
+  z-index: 200;
+  animation: keyHintIn 0.2s ease-out;
+
+  &--match {
+    background: rgba(180, 130, 20, 0.85);
+  }
+}
+
+.key-input-hint-text {
+  font-size: 28rpx;
+  color: #fff;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  letter-spacing: 2rpx;
+}
+
+@keyframes keyHintIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 .modal-mask {
