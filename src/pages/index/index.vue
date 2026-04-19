@@ -140,6 +140,15 @@
 
     <!-- Tab 切换 -->
     <view class="tab-switcher" :class="{ 'tab-switcher-up': currentTab === 'watchlist' || isCardsCollapsed }">
+      <!-- 搜索持仓基金按钮 -->
+      <view class="search-fab" @tap="onSearchFabTap">
+        <!-- #ifdef H5 -->
+        <view id="search-lottie-canvas" class="search-lottie-canvas"></view>
+        <!-- #endif -->
+        <!-- #ifdef MP-WEIXIN -->
+        <canvas id="search-lottie-canvas" type="2d" class="search-lottie-canvas"></canvas>
+        <!-- #endif -->
+      </view>
       <view class="tab-item" :class="{ active: currentTab === 'holdings' }" @tap="switchTab('holdings')">
         <text class="tab-text">我的持仓</text>
         <view class="tab-indicator" v-if="currentTab === 'holdings'"></view>
@@ -163,12 +172,10 @@
         <!-- #endif -->
       </view>
       <view class="sort-control">
-        <picker mode="selector" :range="sortOptions" range-key="label" @change="onSortTypeChange">
-          <view class="sort-picker">
-            <text class="sort-label">{{ currentSortLabel }}</text>
-            <text class="sort-arrow">▼</text>
-          </view>
-        </picker>
+        <view class="sort-picker" @tap="toggleSortDropdown">
+          <text class="sort-label">{{ currentSortLabel }}</text>
+          <text class="sort-arrow" :class="{ 'sort-arrow--open': showSortDropdown }">▼</text>
+        </view>
         <view class="sort-order-btn" @tap="toggleSortOrder">
           <image v-if="sortOrder === 'up'" class="sort-icon" src="data:image/svg+xml,%3Csvg viewBox='0 0 510.933 510.933' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon fill='%23fb5050' points='297.133,296.6 297.133,194.2 356.867,194.2 254.467,6.467 152.067,194.2 211.8,194.2 211.8,296.6'/%3E%3Cpath fill='%23fb5050' d='M280.067,347.8c0,9.387-7.68,17.067-17.067,17.067h-17.067c-9.387,0-17.067-7.68-17.067-17.067s7.68-17.067,17.067-17.067H263C272.387,330.733,280.067,338.413,280.067,347.8'/%3E%3Cpath fill='%23FFA800' d='M280.067,347.8c0,9.387-7.68,17.067-17.067,17.067h17.067c9.387,0,17.067-7.68,17.067-17.067s-7.68-17.067-17.067-17.067H263C272.387,330.733,280.067,338.413,280.067,347.8'/%3E%3Cpath fill='%23FFFFFF' d='M228.867,364.867h17.067c-9.387,0-17.067-7.68-17.067-17.067s7.68-17.067,17.067-17.067h-17.067c-9.387,0-17.067,7.68-17.067,17.067S219.48,364.867,228.867,364.867'/%3E%3Cpath fill='%23fb5050' d='M280.067,416.067c0,9.387-7.68,17.067-17.067,17.067h-17.067c-9.387,0-17.067-7.68-17.067-17.067s7.68-17.067,17.067-17.067H263C272.387,399,280.067,406.68,280.067,416.067'/%3E%3Cpath fill='%23FFA800' d='M280.067,416.067c0,9.387-7.68,17.067-17.067,17.067h17.067c9.387,0,17.067-7.68,17.067-17.067S289.453,399,280.067,399H263C272.387,399,280.067,406.68,280.067,416.067'/%3E%3Cpath fill='%23FFFFFF' d='M228.867,433.133h17.067c-9.387,0-17.067-7.68-17.067-17.067S236.547,399,245.933,399h-17.067c-9.387,0-17.067,7.68-17.067,17.067S219.48,433.133,228.867,433.133'/%3E%3Cpath fill='%23fb5050' d='M280.067,484.333c0,9.387-7.68,17.067-17.067,17.067h-17.067c-9.387,0-17.067-7.68-17.067-17.067s7.68-17.067,17.067-17.067H263C272.387,467.267,280.067,474.947,280.067,484.333'/%3E%3Cpath fill='%23FFA800' d='M280.067,484.333c0,9.387-7.68,17.067-17.067,17.067h17.067c9.387,0,17.067-7.68,17.067-17.067c0-9.387-7.68-17.067-17.067-17.067H263C272.387,467.267,280.067,474.947,280.067,484.333'/%3E%3Cpath fill='%23FFFFFF' d='M228.867,501.4h17.067c-9.387,0-17.067-7.68-17.067-17.067c0-9.387,7.68-17.067,17.067-17.067h-17.067c-9.387,0-17.067,7.68-17.067,17.067C211.8,493.72,219.48,501.4,228.867,501.4'/%3E%3Cpath fill='%23000000' d='M280.067,373.4h-51.2c-14.507,0-25.6-11.093-25.6-25.6s11.093-25.6,25.6-25.6h51.2c14.507,0,25.6,11.093,25.6,25.6S294.573,373.4,280.067,373.4z M228.867,339.267c-5.12,0-8.533,3.413-8.533,8.533s3.413,8.533,8.533,8.533h51.2c5.12,0,8.533-3.413,8.533-8.533s-3.413-8.533-8.533-8.533H228.867z'/%3E%3Cpath fill='%23000000' d='M280.067,441.667h-51.2c-14.507,0-25.6-11.093-25.6-25.6c0-14.507,11.093-25.6,25.6-25.6h51.2c14.507,0,25.6,11.093,25.6,25.6C305.667,430.573,294.573,441.667,280.067,441.667z M228.867,407.533c-5.12,0-8.533,3.413-8.533,8.533c0,5.12,3.413,8.533,8.533,8.533h51.2c5.12,0,8.533-3.413,8.533-8.533c0-5.12-3.413-8.533-8.533-8.533H228.867z'/%3E%3Cpath fill='%23000000' d='M280.067,509.933h-51.2c-14.507,0-25.6-11.093-25.6-25.6c0-14.507,11.093-25.6,25.6-25.6h51.2c14.507,0,25.6,11.093,25.6,25.6C305.667,498.84,294.573,509.933,280.067,509.933z M228.867,475.8c-5.12,0-8.533,3.413-8.533,8.533c0,5.12,3.413,8.533,8.533,8.533h51.2c5.12,0,8.533-3.413,8.533-8.533c0-5.12-3.413-8.533-8.533-8.533H228.867z'/%3E%3Cpath fill='%23000000' d='M297.133,305.133H211.8c-5.12,0-8.533-3.413-8.533-8.533v-93.867h-85.333c-3.413,0-5.973-1.707-7.68-4.267s-0.853-5.973,0.853-8.533L247.64,2.2c3.413-4.267,10.24-4.267,13.653,0l136.533,187.733c1.707,2.56,2.56,5.973,0.853,8.533c-1.707,2.56-4.267,4.267-7.68,4.267H305.667V296.6C305.667,301.72,302.253,305.133,297.133,305.133z M220.333,288.067H288.6V194.2c0-5.12,3.413-8.533,8.533-8.533h76.8L254.467,22.067L135,185.667h76.8c5.12,0,8.533,3.413,8.533,8.533V288.067z'/%3E%3C/svg%3E" mode="aspectFit" />
           <image v-else class="sort-icon" src="data:image/svg+xml,%3Csvg viewBox='0 0 510.933 510.933' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon fill='%2323d138' points='297.133,194.2 297.133,296.6 211.8,296.6 211.8,194.2 152.067,194.2 254.467,506.467 356.867,194.2'/%3E%3Cpath fill='%2323d138' d='M280.067,163.2c0-9.387-7.68-17.067-17.067-17.067h-17.067c-9.387,0-17.067,7.68-17.067,17.067s7.68,17.067,17.067,17.067H263C272.387,180.267,280.067,172.587,280.067,163.2'/%3E%3Cpath fill='%23FFA800' d='M280.067,163.2c0-9.387-7.68-17.067-17.067-17.067h17.067c9.387,0,17.067,7.68,17.067,17.067s-7.68,17.067-17.067,17.067H263C272.387,180.267,280.067,172.587,280.067,163.2'/%3E%3Cpath fill='%23FFFFFF' d='M228.867,146.133h17.067c-9.387,0-17.067,7.68-17.067,17.067s7.68,17.067,17.067,17.067h-17.067c-9.387,0-17.067-7.68-17.067-17.067S219.48,146.133,228.867,146.133'/%3E%3Cpath fill='%2323d138' d='M280.067,94.933c0-9.387-7.68-17.067-17.067-17.067h-17.067c-9.387,0-17.067,7.68-17.067,17.067s7.68,17.067,17.067,17.067H263C272.387,112,280.067,104.32,280.067,94.933'/%3E%3Cpath fill='%23FFA800' d='M280.067,94.933c0-9.387-7.68-17.067-17.067-17.067h17.067c9.387,0,17.067,7.68,17.067,17.067S289.453,112,280.067,112H263C272.387,112,280.067,104.32,280.067,94.933'/%3E%3Cpath fill='%23FFFFFF' d='M228.867,77.867h17.067c-9.387,0-17.067,7.68-17.067,17.067s7.68,17.067,17.067,17.067h-17.067c-9.387,0-17.067-7.68-17.067-17.067S219.48,77.867,228.867,77.867'/%3E%3Cpath fill='%2323d138' d='M280.067,26.667c0-9.387-7.68-17.067-17.067-17.067h-17.067c-9.387,0-17.067,7.68-17.067,17.067s7.68,17.067,17.067,17.067H263C272.387,43.733,280.067,36.053,280.067,26.667'/%3E%3Cpath fill='%23FFA800' d='M280.067,26.667c0-9.387-7.68-17.067-17.067-17.067h17.067c9.387,0,17.067,7.68,17.067,17.067c0,9.387-7.68,17.067-17.067,17.067H263C272.387,43.733,280.067,36.053,280.067,26.667'/%3E%3Cpath fill='%23FFFFFF' d='M228.867,9.6h17.067c-9.387,0-17.067,7.68-17.067,17.067c0,9.387,7.68,17.067,17.067,17.067h-17.067c-9.387,0-17.067-7.68-17.067-17.067C211.8,17.28,219.48,9.6,228.867,9.6'/%3E%3Cpath fill='%23000000' d='M280.067,137.6h-51.2c-14.507,0-25.6-11.093-25.6-25.6s11.093-25.6,25.6-25.6h51.2c14.507,0,25.6,11.093,25.6,25.6S294.573,137.6,280.067,137.6z M228.867,103.467c-5.12,0-8.533,3.413-8.533,8.533s3.413,8.533,8.533,8.533h51.2c5.12,0,8.533-3.413,8.533-8.533s-3.413-8.533-8.533-8.533H228.867z'/%3E%3Cpath fill='%23000000' d='M280.067,69.333h-51.2c-14.507,0-25.6-11.093-25.6-25.6c0-14.507,11.093-25.6,25.6-25.6h51.2c14.507,0,25.6,11.093,25.6,25.6C305.667,58.24,294.573,69.333,280.067,69.333z M228.867,35.2c-5.12,0-8.533,3.413-8.533,8.533c0,5.12,3.413,8.533,8.533,8.533h51.2c5.12,0,8.533-3.413,8.533-8.533c0-5.12-3.413-8.533-8.533-8.533H228.867z'/%3E%3Cpath fill='%23000000' d='M280.067,1.067h-51.2c-14.507,0-25.6-11.093-25.6-25.6c0-14.507,11.093-25.6,25.6-25.6h51.2c14.507,0,25.6,11.093,25.6,25.6C305.667-10.027,294.573,1.067,280.067,1.067z M228.867-33.067c-5.12,0-8.533,3.413-8.533,8.533c0,5.12,3.413,8.533,8.533,8.533h51.2c5.12,0,8.533-3.413,8.533-8.533c0-5.12-3.413-8.533-8.533-8.533H228.867z'/%3E%3Cpath fill='%23000000' d='M297.133,205.867H211.8c-5.12,0-8.533,3.413-8.533,8.533v93.867h-85.333c-3.413,0-5.973,1.707-7.68,4.267s-0.853,5.973,0.853,8.533L247.64,508.8c3.413,4.267,10.24,4.267,13.653,0l136.533-187.733c1.707-2.56,2.56-5.973,0.853-8.533c-1.707-2.56-4.267-4.267-7.68-4.267H305.667V214.4C305.667,209.28,302.253,205.867,297.133,205.867z M220.333,222.933H288.6v93.867c0,5.12,3.413,8.533,8.533,8.533h76.8L254.467,488.933L135,325.333h76.8c5.12,0,8.533-3.413,8.533-8.533V222.933z'/%3E%3C/svg%3E" mode="aspectFit" />
@@ -378,6 +385,33 @@
       <image class="fab-icon-svg" src="data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M526.507431 109.121602c-231.868047 0-419.788888 187.920841-419.788887 419.788888s187.920841 419.788888 419.788887 419.788888 419.788888-187.920841 419.788888-419.788888S758.375478 109.121602 526.507431 109.121602zM778.381173 545.702209H543.29915v233.967012h-33.583438V545.702209H275.7487v-33.583438h233.967012V277.036748h33.583438v235.082023H778.381173v33.583438z' fill='%2398C4D8'/%3E%3Cpath d='M492.923993 75.538164c-231.868047 0-419.788888 187.920841-419.788888 419.788887s187.920841 419.788888 419.788888 419.788888 419.788888-187.920841 419.788887-419.788888S724.792039 75.538164 492.923993 75.538164zM744.797735 512.118771H509.715712v233.967011h-33.583439V512.118771H242.166285v-33.583439h233.967012V243.453309h33.583439v235.082023H744.797735v33.583439z' fill='%23EFD9A0'/%3E%3Cpath d='M268.480057 288.159806a30.213832 64.203753 55.515 1 0 105.843026-72.703105 30.213832 64.203753 55.515 1 0-105.843026 72.703105Z' fill='%23FEFEFE'/%3E%3Cpath d='M203.600369 393.818901a20.142896 35.2493 55.515 1 0 58.110194-39.915635 20.142896 35.2493 55.515 1 0-58.110194 39.915635Z' fill='%23FEFEFE'/%3E%3C/svg%3E" mode="aspectFit" />
     </view>
 
+    <!-- 排序下拉菜单（fixed定位，避免被scroll-view遮挡） -->
+    <view class="sort-dropdown-mask" v-if="showSortDropdown" @tap="closeSortDropdown"></view>
+    <view class="sort-dropdown-glass" v-if="showSortDropdown" :style="{ top: sortDropdownTop, right: sortDropdownRight }">
+      <view class="sort-dropdown">
+        <view 
+          class="sort-dropdown-item" 
+          :class="{ 'sort-dropdown-item--active': sortType === item.value }" 
+          v-for="item in sortOptions" 
+          :key="item.value"
+          @tap.stop="onSortDropdownSelect(item)"
+        >
+          <text class="sort-dropdown-text">{{ item.label }}</text>      
+        </view>
+      </view>
+    </view>
+
+    <!-- 隐藏input用于移动端调出键盘 -->
+    <input 
+      class="search-fab-input" 
+      v-model="searchFabKeyword" 
+      type="number"
+      :focus="searchFabFocused"
+      @input="onSearchFabInput"
+      @blur="onSearchFabBlur"
+      confirm-type="search"
+    />
+
     <!-- 键盘快速定位提示 -->
     <view class="key-input-hint" v-if="keyInputHint" :class="{ 'key-input-hint--match': keyInputMatchId }">
       <text class="key-input-hint-text">{{ keyInputHint }}</text>
@@ -436,9 +470,14 @@ export default {
       watchSearchLoading: false,
       watchSearchEmpty: false,
       searchTimer: null,
+      searchFabKeyword: '',
+      searchFabFocused: false,
       deleteTarget: null,
       sortOrder: 'down',
       sortType: 'total',
+      showSortDropdown: false,
+      sortDropdownTop: '0px',
+      sortDropdownRight: '0px',
       watchSwipeOpenId: '',
       watchSwipeOffsets: {},
       watchDeletingMap: {},
@@ -498,8 +537,6 @@ export default {
     // 键盘快速定位：非响应式内部状态（不触发渲染）
     this._keyBuffer = ''
     this._keyTimer = null
-    this._keyScrolling = false
-    this._keyLastInputTime = 0
     this._holdingCurrentScrollTop = 0
     this._watchCurrentScrollTop = 0
     // #ifdef H5
@@ -530,8 +567,9 @@ export default {
           import('@/static/icons/piggy-saving.json'),
           import('@/static/icons/stock.json'),
           import('@/static/icons/rollup.json'),
-          import('@/static/icons/del_arrow.json')
-        ]).then(([piggySavingData, stockData, rollupData, delArrowData]) => {
+          import('@/static/icons/del_arrow.json'),
+          import('@/static/icons/search_zx3.json')
+        ]).then(([piggySavingData, stockData, rollupData, delArrowData, searchZx3Data]) => {
           // 加载 piggy-saving 动画
           lottie.default.loadAnimation({
             container: document.getElementById('lottie-canvas'),
@@ -560,6 +598,18 @@ export default {
           })
 
           this.initWatchSwipeHintLottieH5(lottie.default, delArrowData.default)
+
+          // 加载 search-zx3 搜索动画
+          const searchEl = document.getElementById('search-lottie-canvas')
+          if (searchEl) {
+            lottie.default.loadAnimation({
+              container: searchEl,
+              renderer: 'svg',
+              loop: true,
+              autoplay: true,
+              animationData: searchZx3Data.default
+            })
+          }
         }).catch(err => {
           console.error('加载lottie动画失败:', err)
         })
@@ -684,6 +734,42 @@ export default {
           console.error('加载del_arrow动画失败:', err)
         }
       })
+
+      // 加载search_zx3.json动画（微信小程序）
+      const searchQuery = uni.createSelectorQuery().in(this)
+      searchQuery.select('#search-lottie-canvas')
+        .fields({ node: true, size: true })
+        .exec((res) => {
+          if (res && res[0]) {
+            const canvas = res[0].node
+            const ctx = canvas.getContext('2d')
+
+            const dpr = 3
+            canvas.width = 48 * dpr
+            canvas.height = 48 * dpr
+            ctx.scale(dpr, dpr)
+
+            uni.request({
+              url: '/static/icons/search_zx3.json',
+              success: (response) => {
+                const lottie = require('lottie-miniprogram')
+                lottie.loadAnimation({
+                  loop: true,
+                  autoplay: true,
+                  animationData: response.data,
+                  rendererSettings: {
+                    context: ctx,
+                    canvas: canvas,
+                    clearCanvas: true
+                  }
+                })
+              },
+              fail: (err) => {
+                console.error('加载search_zx3动画失败:', err)
+              }
+            })
+          }
+        })
       // #endif
     },
 
@@ -1018,9 +1104,31 @@ export default {
       })
     },
     
-    onSortTypeChange(e) {
-      const index = e.detail.value
-      this.sortType = this.sortOptions[index].value
+    toggleSortDropdown() {
+      if (this.showSortDropdown) {
+        this.showSortDropdown = false
+        return
+      }
+      // 获取 sort-picker 的位置来定位下拉菜单
+      const query = uni.createSelectorQuery().in(this)
+      query.select('.sort-picker').boundingClientRect()
+      query.exec((res) => {
+        if (res && res[0]) {
+          const rect = res[0]
+          this.sortDropdownTop = (rect.bottom + 6) + 'px'
+          // 计算右边距：窗口宽度 - 元素右边缘
+          const sysInfo = uni.getSystemInfoSync()
+          this.sortDropdownRight = (sysInfo.windowWidth - rect.right) + 'px'
+        }
+        this.showSortDropdown = true
+      })
+    },
+    closeSortDropdown() {
+      this.showSortDropdown = false
+    },
+    onSortDropdownSelect(item) {
+      this.sortType = item.value
+      this.showSortDropdown = false
       this.sortHoldings()
     },
     
@@ -1282,7 +1390,6 @@ export default {
       if (/^\d$/.test(key)) {
         e.preventDefault()
         this._keyBuffer += key
-        this._keyLastInputTime = Date.now()
         this.onKeyInputChange()
       } else if (key === 'Escape') {
         this.clearKeyInput()
@@ -1309,8 +1416,6 @@ export default {
       if (matchItem) {
         this.keyInputMatchId = matchItem.id
         this.keyInputHint = buffer + ' → ' + (matchItem.fundName || matchItem.fundCode)
-        // 标记程序触发的滚动，避免被 @scroll 误清除高亮
-        this._keyScrolling = true
         // 用 createSelectorQuery 精确计算 scrollTop，确保卡片在可见区域最上方
         const isHoldings = this.currentTab === 'holdings'
         const selector = isHoldings ? '#holding-' + matchItem.id : '#watch-' + matchItem.id
@@ -1335,9 +1440,7 @@ export default {
             }
           }
         })
-        // 滚动动画约 300ms，之后恢复标记
-        setTimeout(() => { this._keyScrolling = false }, 500)
-        // 基金代码完整匹配后，2秒自动清除提示文字
+        // 基金代码完整匹配后，2秒自动清除提示文字和缓冲区
         if (matchItem.fundCode === buffer) {
           if (this._keyTimer) clearTimeout(this._keyTimer)
           this._keyTimer = setTimeout(() => {
@@ -1367,21 +1470,47 @@ export default {
     },
     onHoldingScroll(e) {
       this._holdingCurrentScrollTop = e.detail.scrollTop
-      // 只在用户真正手动滚动时清除高亮（非程序触发的滚动、非数据刷新导致的滚动）
-      if (!this._keyScrolling && this.keyInputMatchId) {
-        // 延迟检查：如果短时间内又有按键输入，说明是数据刷新引起的假滚动，不清除
-        if (this._keyLastInputTime && (Date.now() - this._keyLastInputTime < 800)) return
+      // 只要用户还在输入中（缓冲区非空），绝不清除任何状态
+      if (this._keyBuffer) return
+      // 输入已结束后，用户手动滚动才清除高亮
+      if (this.keyInputMatchId) {
         this.keyInputMatchId = ''
         this.keyInputHint = ''
       }
     },
     onWatchScroll(e) {
       this._watchCurrentScrollTop = e.detail.scrollTop
-      if (!this._keyScrolling && this.keyInputMatchId) {
-        if (this._keyLastInputTime && (Date.now() - this._keyLastInputTime < 800)) return
+      if (this._keyBuffer) return
+      if (this.keyInputMatchId) {
         this.keyInputMatchId = ''
         this.keyInputHint = ''
       }
+    },
+    
+    // 搜索持仓基金悬浮按钮
+    onSearchFabTap() {
+      this.searchFabKeyword = ''
+      this.searchFabFocused = true
+    },
+    onSearchFabInput() {
+      const keyword = this.searchFabKeyword.trim()
+      if (!keyword) {
+        this.keyInputHint = ''
+        this.keyInputMatchId = ''
+        return
+      }
+      // 复用键盘快速定位逻辑
+      this._keyBuffer = keyword
+      this.onKeyInputChange()
+    },
+    onSearchFabBlur() {
+      this.searchFabFocused = false
+      // 延迟清除，避免点击搜索结果时blur先触发
+      setTimeout(() => {
+        if (!this.searchFabFocused) {
+          this.searchFabKeyword = ''
+        }
+      }, 300)
     },
   }
 }
@@ -2857,6 +2986,72 @@ export default {
 .sort-arrow {
   font-size: 18rpx;
   color: $text-tertiary;
+  transition: transform 0.2s ease;
+
+  &--open {
+    transform: rotate(180deg);
+  }
+}
+
+.sort-dropdown-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 199;
+}
+
+.sort-dropdown-glass {
+  position: fixed;
+  min-width: 240rpx;
+  background: transparent;
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 20rpx;
+  z-index: 200;
+  animation: sortDropdownIn 0.2s ease-out;
+  overflow: hidden;
+}
+
+.sort-dropdown {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 8rpx 0;
+  border-radius: 20rpx;
+}
+
+.sort-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 28rpx;
+
+  &:active {
+    background: rgba(180, 130, 70, 0.1);
+  }
+
+  &--active {
+    .sort-dropdown-text {
+      color: #B45309;
+      font-weight: 600;
+    }
+  }
+}
+
+.sort-dropdown-text {
+  font-size: 26rpx;
+  color: $text-primary;
+}
+
+@keyframes sortDropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8rpx) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .sort-order-btn {
@@ -3173,6 +3368,34 @@ export default {
 .fab-icon-svg {
   width: 100rpx;
   height: 100rpx;
+}
+
+.search-fab {
+  width: 64rpx;
+  height: 64rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8rpx;
+
+  &:active {
+    transform: scale(0.9);
+  }
+}
+
+.search-lottie-canvas {
+  width: 56rpx;
+  height: 56rpx;
+}
+
+.search-fab-input {
+  position: fixed;
+  left: -9999rpx;
+  top: -9999rpx;
+  width: 0;
+  height: 0;
+  opacity: 0;
 }
 
 .nav-placeholder {
