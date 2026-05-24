@@ -147,13 +147,23 @@ export default {
     }
   },
   onLoad(options) {
+    // 防抖与竞态控制（非响应式）
+    this.searchTimer = null
+    this.searchReqId = 0
+
     // 获取已有持仓列表
     this.existingHoldings = getHoldings()
-    
+
     if (options.id) {
       this.isEdit = true
       this.editId = options.id
       this.loadHolding(options.id)
+    }
+  },
+  onUnload() {
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer)
+      this.searchTimer = null
     }
   },
   watch: {
@@ -187,15 +197,24 @@ export default {
     // 基金代码输入
     onFundCodeInput(value) {
       const code = this.form.fundCode
+      if (this.searchTimer) {
+        clearTimeout(this.searchTimer)
+        this.searchTimer = null
+      }
       if (code.length >= 2) {
-        this.searchFunds(code)
         this.showSearch = true
+        this.searchTimer = setTimeout(() => {
+          this.searchTimer = null
+          if (this.form.fundCode === code && code.length >= 2) {
+            this.searchFunds(code)
+          }
+        }, 1000)
       } else {
         this.searchResults = []
         this.showSearch = false
       }
     },
-    
+
     // 基金代码聚焦
     onFundCodeFocus() {
       const code = this.form.fundCode
@@ -203,7 +222,7 @@ export default {
         this.showSearch = true
       }
     },
-    
+
     // 页面点击
     handlePageTap() {
       // 点击外部区域关闭搜索结果
@@ -211,11 +230,15 @@ export default {
         this.showSearch = false
       }
     },
-    
+
     // 搜索基金
     async searchFunds(keyword) {
+      const reqId = ++this.searchReqId
       try {
-        this.searchResults = await searchFund(keyword)
+        const results = await searchFund(keyword)
+        if (reqId === this.searchReqId && this.form.fundCode === keyword) {
+          this.searchResults = results
+        }
       } catch (e) {
         console.error('搜索基金失败:', e)
       }
