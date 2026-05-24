@@ -55,8 +55,8 @@
         <text class="form-label">持有金额</text>
         <view class="input-wrapper">
           <text class="input-prefix">¥</text>
-          <input 
-            class="form-input form-input-lg input-with-prefix" 
+          <input
+            class="form-input form-input-lg input-with-prefix"
             v-model="form.amount"
             type="digit"
             placeholder="0.00"
@@ -67,8 +67,8 @@
       <!-- 持有收益 -->
       <view class="form-section">
         <text class="form-label">持有收益</text>
-        <input 
-          class="form-input form-input-lg" 
+        <input
+          class="form-input form-input-lg"
           v-model="form.profit"
           type="digit"
           placeholder="+/- 0.00"
@@ -208,7 +208,7 @@ export default {
           if (this.form.fundCode === code && code.length >= 2) {
             this.searchFunds(code)
           }
-        }, 1000)
+        }, 800)
       } else {
         this.searchResults = []
         this.showSearch = false
@@ -223,13 +223,8 @@ export default {
       }
     },
 
-    // 页面点击
-    handlePageTap() {
-      // 点击外部区域关闭搜索结果
-      if (this.showSearch) {
-        this.showSearch = false
-      }
-    },
+    // 页面点击（保留为空，搜索结果不再因点击空白而隐藏）
+    handlePageTap() {},
 
     // 搜索基金
     async searchFunds(keyword) {
