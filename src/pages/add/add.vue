@@ -687,21 +687,39 @@ export default {
   transition: 0.2s;
   border-radius: 10rpx;
   letter-spacing: 2rpx;
-  box-shadow: #c0392b 0px 12rpx 4rpx, #000 0px 14rpx 8rpx;
   font-size: 26rpx !important;
   line-height: 1.2 !important;
   margin-top: auto;
   margin-bottom: 32rpx;
   margin-left: auto;
   margin-right: auto;
-  
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 12rpx;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    background-color: #c0392b;
+    border-radius: 10rpx;
+    z-index: -1;
+    box-shadow: 0 14rpx 8rpx rgba(0, 0, 0, 0.3);
+    transition: 0.2s;
+  }
+
   &.is-disabled {
     opacity: 0.5 !important;
   }
-  
+
   &:active:not(.is-disabled) {
     transform: translateY(4rpx);
-    box-shadow: #c0392b 0px 8rpx 2rpx, #000 0px 10rpx 6rpx;
+
+    &::before {
+      top: 8rpx;
+      box-shadow: 0 10rpx 6rpx rgba(0, 0, 0, 0.3);
+    }
   }
 }
 </style>
