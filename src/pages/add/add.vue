@@ -67,12 +67,31 @@
       <!-- 持有收益 -->
       <view class="form-section">
         <text class="form-label">持有收益</text>
-        <input
-          class="form-input form-input-lg"
-          v-model="form.profit"
-          type="digit"
-          placeholder="+/- 0.00"
-        />
+        <view class="profit-input-row">
+          <view class="profit-sign-toggle">
+            <view
+              class="profit-sign-btn profit-sign-profit"
+              :class="{ active: profitSign === 1 }"
+              @tap="setProfitSign(1)"
+            >
+              <text>盈利 +</text>
+            </view>
+            <view
+              class="profit-sign-btn profit-sign-loss"
+              :class="{ active: profitSign === -1 }"
+              @tap="setProfitSign(-1)"
+            >
+              <text>亏损 -</text>
+            </view>
+          </view>
+          <input
+            class="form-input form-input-lg profit-input"
+            v-model="form.profit"
+            type="digit"
+            placeholder="0.00"
+            @input="onProfitInput"
+          />
+        </view>
       </view>
 
       <!-- 收益预览 -->
@@ -120,6 +139,7 @@ export default {
       searchResults: [],
       showSearch: false,
       isSubmitting: false,
+      profitSign: 1,
       preview: {
         rate: 0,
         today: 0
@@ -188,11 +208,13 @@ export default {
       const holdings = getHoldings()
       const holding = holdings.find(h => h.id === id)
       if (holding) {
+        const profit = parseFloat(holding.profit) || 0
+        this.profitSign = profit < 0 ? -1 : 1
         this.form = {
           fundCode: holding.fundCode,
           fundName: holding.fundName,
           amount: holding.amount.toString(),
-          profit: holding.profit.toString()
+          profit: Math.abs(profit).toString()
         }
         // 加载数据后计算预览
         await this.calculatePreview()
@@ -231,6 +253,18 @@ export default {
     // 页面点击（保留为空，搜索结果不再因点击空白而隐藏）
     handlePageTap() {},
 
+    setProfitSign(sign) {
+      this.profitSign = sign
+      this.calculatePreview()
+    },
+
+    onProfitInput(event) {
+      const rawValue = event.detail?.value ?? this.form.profit
+      const numericValue = rawValue.replace(/[^\d.]/g, '')
+      const parts = numericValue.split('.')
+      this.form.profit = parts.length > 1 ? `${parts[0]}.${parts.slice(1).join('')}` : numericValue
+    },
+
     // 搜索基金
     async searchFunds(keyword) {
       const reqId = ++this.searchReqId
@@ -255,7 +289,7 @@ export default {
     // 计算预览
     async calculatePreview() {
       const amount = parseFloat(this.form.amount) || 0
-      const profit = parseFloat(this.form.profit) || 0
+      const profit = (parseFloat(this.form.profit) || 0) * this.profitSign
       
       // 累计收益率
       this.preview.rate = amount > 0 ? (profit / amount * 100) : 0
@@ -299,7 +333,7 @@ export default {
           fundCode: this.form.fundCode,
           fundName: fundName,
           amount: parseFloat(this.form.amount),
-          profit: parseFloat(this.form.profit)
+          profit: (parseFloat(this.form.profit) || 0) * this.profitSign
         }
         
         if (this.isEdit) {
@@ -525,6 +559,51 @@ export default {
 
 .input-with-prefix {
   padding-left: 96rpx;
+}
+
+.profit-input-row {
+  display: flex;
+  gap: 16rpx;
+  align-items: stretch;
+}
+
+.profit-sign-toggle {
+  width: 200rpx;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10rpx;
+  flex-shrink: 0;
+}
+
+.profit-sign-btn {
+  min-height: 60rpx;
+  border-radius: $radius-sm;
+  border: 1px solid $border-card;
+  background: $glass-bg;
+  color: $text-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  font-weight: 700;
+
+  &.active {
+    color: #fff;
+    border-color: transparent;
+  }
+}
+
+.profit-sign-profit.active {
+  background: $accent-red;
+}
+
+.profit-sign-loss.active {
+  background: $accent-green;
+}
+
+.profit-input {
+  flex: 1;
+  min-width: 0;
 }
 
 /* 搜索结果 */
