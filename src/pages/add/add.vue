@@ -119,6 +119,7 @@ export default {
       },
       searchResults: [],
       showSearch: false,
+      isSubmitting: false,
       preview: {
         rate: 0,
         today: 0
@@ -128,6 +129,10 @@ export default {
   },
   computed: {
     canSubmit() {
+      if (this.isSubmitting) {
+        return false
+      }
+
       // 编辑模式下不检查是否已持有
       if (this.isEdit) {
         return this.form.fundCode.length >= 6 && 
@@ -278,7 +283,8 @@ export default {
     // 提交
     async submit() {
       if (!this.canSubmit) return
-      
+      this.isSubmitting = true
+
       uni.showLoading({ title: '保存中...' })
       
       try {
@@ -314,6 +320,7 @@ export default {
         
       } catch (e) {
         uni.hideLoading()
+        this.isSubmitting = false
         uni.showToast({
           title: '保存失败',
           icon: 'error'

@@ -37,6 +37,11 @@ export const saveHoldings = (holdings) => {
  */
 export const addHolding = async (holding) => {
   const holdings = getHoldings()
+  const existingHolding = holdings.find(h => h.fundCode === holding.fundCode)
+  if (existingHolding) {
+    return existingHolding
+  }
+
   const newHolding = {
     id: Date.now().toString(),
     ...holding,
