@@ -1,7 +1,31 @@
 {
+  "env": {
+    "SHELL": "C:/软件/Git/usr/bin/bash.exe"
+  },
   "permissions": {
     "allow": [
-      "Bash(npm run:*)"
+      "Bash(npm view *)",
+      "WebSearch",
+      "WebFetch(domain:registry.npmjs.org)",
+      "Bash(npm install *)",
+      "Bash(npm -v)",
+      "Bash(npm run *)",
+      "Skill(doko)",
+      "Skill(doko:*)",
+      "Bash(dokobot doko *)",
+      "Read(//c/Users/51440/.claude/skills/**)",
+      "Bash(git init *)",
+      "Bash(gh repo *)",
+      "Bash(git remote *)",
+      "Bash(git ls-remote *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Read(//c/Users/51440/Desktop/**)",
+      "Bash(python -)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\51440\\Desktop"
     ]
-  }
+  },
+  "defaultShell": "bash"
 }

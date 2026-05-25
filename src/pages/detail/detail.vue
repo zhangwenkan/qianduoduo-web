@@ -27,6 +27,20 @@
         </text>
         <text class="estimate-time" v-if="timeDesc">{{ timeDesc }}</text>
       </view>
+      <view class="period-returns" v-if="periodReturns">
+        <view class="period-item">
+          <text class="period-label">近1周</text>
+          <text class="period-value" :class="getReturnClass(periodReturns.week)">{{ formatReturn(periodReturns.week) }}</text>
+        </view>
+        <view class="period-item">
+          <text class="period-label">近1月</text>
+          <text class="period-value" :class="getReturnClass(periodReturns.month)">{{ formatReturn(periodReturns.month) }}</text>
+        </view>
+        <view class="period-item">
+          <text class="period-label">近3月</text>
+          <text class="period-value" :class="getReturnClass(periodReturns.threeMonth)">{{ formatReturn(periodReturns.threeMonth) }}</text>
+        </view>
+      </view>
     </view>
     
     <view class="section" v-if="topHoldings.length > 0">
@@ -66,7 +80,7 @@
 </template>
 
 <script>
-import { getFundDetail, getFundTopHoldings } from '@/utils/api.js'
+import { getFundDetail, getFundTopHoldings, getFundPeriodReturns } from '@/utils/api.js'
 
 export default {
   data() {
@@ -79,6 +93,7 @@ export default {
       estimatedNav: null,
       estimatedPercent: null,
       timeDesc: '',
+      periodReturns: null,
       topHoldings: [],
       activeHoldingIndex: 0,
       holdingTimer: null
@@ -150,10 +165,31 @@ export default {
       return Number.isFinite(num) ? num : 0
     },
 
+    formatReturn(value) {
+      const num = Number(value)
+      if (!Number.isFinite(num)) {
+        return '--'
+      }
+      return `${num >= 0 ? '+' : ''}${num.toFixed(2)}%`
+    },
+
+    getReturnClass(value) {
+      const num = Number(value)
+      if (!Number.isFinite(num)) {
+        return ''
+      }
+      return num >= 0 ? 'red' : 'green'
+    },
+
     async loadDetail() {
       this.loading = true
       try {
-        const detail = await getFundDetail(this.fundCode)
+        const [detail, holdings, periodReturns] = await Promise.all([
+          getFundDetail(this.fundCode),
+          getFundTopHoldings(this.fundCode),
+          getFundPeriodReturns(this.fundCode)
+        ])
+
         if (detail) {
           this.nav = detail.nav
           this.navDate = detail.navDate
@@ -161,8 +197,8 @@ export default {
           this.estimatedPercent = detail.estimatedPercent
           this.timeDesc = detail.timeDesc
         }
-        
-        const holdings = await getFundTopHoldings(this.fundCode)
+
+        this.periodReturns = periodReturns
         this.topHoldings = (holdings || []).slice().sort((a, b) => this.parseHoldingPercent(b.percent) - this.parseHoldingPercent(a.percent))
         this.startHoldingAnimation()
       } catch (e) {
@@ -328,6 +364,38 @@ export default {
   background: rgba(180, 130, 70, 0.1);
   padding: 4rpx 12rpx;
   border-radius: 8rpx;
+}
+
+.period-returns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx;
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+.period-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  padding: 16rpx 8rpx;
+  background: rgba(255, 255, 255, 0.42);
+  border-radius: 16rpx;
+}
+
+.period-label {
+  font-size: 22rpx;
+  color: $text-secondary;
+}
+
+.period-value {
+  font-size: 28rpx;
+  font-weight: 700;
+
+  &.green { color: $accent-green; }
+  &.red { color: $accent-red; }
 }
 
 .section {

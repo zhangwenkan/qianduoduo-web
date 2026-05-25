@@ -2,7 +2,8 @@
  * 云函数调用工具 - HTTP 版本
  */
 
-const API_BASE = 'https://qianduoduo.dpdns.org'
+const isDev = import.meta.env.DEV
+const API_BASE = isDev ? '' : (import.meta.env.VITE_API_BASE || 'https://qianduoduo.dpdns.org')
 
 export const getApiBase = () => API_BASE
 

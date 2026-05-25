@@ -9,6 +9,32 @@ const isDev = import.meta.env.DEV
 
 const SEARCH_URL = isDev ? '/api/fundsearch' : `${getApiBase()}/api/fundsearch`
 const DETAIL_URL = isDev ? '/api/fundgz' : `${getApiBase()}/api/fundgz`
+const PERIOD_RETURNS_URL = isDev ? '/api/fund-period-returns' : `${getApiBase()}/api/fund-period-returns`
+
+const parseFundPeriodReturns = (text) => {
+  const contentMatch = String(text || '').match(/content\s*:\s*"([\s\S]*)"\s*\}\s*;?\s*$/)
+  if (!contentMatch) return null
+
+  const html = contentMatch[1].replace(/\\"/g, '"').replace(/\\\//g, '/')
+  const rowRegex = /<li class='title'>([^<]+)<\/li>\s*<li[^>]*>([^<]+)<\/li>/g
+  const map = {}
+  let m
+  while ((m = rowRegex.exec(html)) !== null) {
+    map[m[1]] = m[2]
+  }
+
+  const parsePercent = (raw) => {
+    const num = parseFloat(String(raw || '').replace('%', ''))
+    return Number.isFinite(num) ? num : null
+  }
+
+  const returns = {
+    week: parsePercent(map['近1周']),
+    month: parsePercent(map['近1月']),
+    threeMonth: parsePercent(map['近3月'])
+  }
+  return Object.values(returns).some(value => value !== null) ? returns : null
+}
 
 /**
  * 根据估值时间获取时间描述
@@ -168,6 +194,26 @@ export const getFundTopHoldings = async (fundCode) => {
 }
 
 /**
+ * 获取基金阶段涨跌幅（近1周/1月/3月）
+ * 数据来源：天天基金 F10 阶段涨幅接口
+ */
+export const getFundPeriodReturns = (fundCode) => {
+  return new Promise((resolve) => {
+    uni.request({
+      url: `${PERIOD_RETURNS_URL}?code=${fundCode}`,
+      dataType: 'text',
+      success: (res) => {
+        resolve(parseFundPeriodReturns(res.data))
+      },
+      fail: (err) => {
+        console.error('获取基金阶段涨跌幅失败:', err)
+        resolve(null)
+      }
+    })
+  })
+}
+
+/**
  * 获取单个基金信息
  */
 export const getFundInfo = async (fundCode) => {
@@ -196,5 +242,6 @@ export default {
   getFundEstimates,
   getFundInfo,
   getFundSectorsBatch,
-  getFundTopHoldings
+  getFundTopHoldings,
+  getFundPeriodReturns
 }
