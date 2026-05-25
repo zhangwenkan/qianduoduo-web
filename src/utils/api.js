@@ -56,7 +56,10 @@ export const searchFund = (keyword) => {
         try {
           const data = res.data
           if (data && data.Datas) {
-            const funds = data.Datas.slice(0, 10).map(item => ({
+            const matchedItems = /^\d{6}$/.test(keyword)
+              ? data.Datas.filter(item => item.CODE === keyword)
+              : data.Datas
+            const funds = matchedItems.slice(0, 10).map(item => ({
               code: item.CODE,
               name: item.NAME,
               type: item.FUNDTYPE,
