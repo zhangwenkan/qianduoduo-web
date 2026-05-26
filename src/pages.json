@@ -22,6 +22,34 @@
       }
     },
     {
+      "path": "pages/market/market",
+      "style": {
+        "navigationBarTitleText": "市场",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/mine/mine",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/notes/notes",
+      "style": {
+        "navigationBarTitleText": "我的笔记",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/notes/detail",
+      "style": {
+        "navigationBarTitleText": "笔记详情",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
       "path": "pages/add/add",
       "style": {
         "navigationBarTitleText": "",
@@ -50,12 +78,19 @@
     "selectedColor": "#d97706",
     "backgroundColor": "#faf8f5",
     "borderStyle": "white",
+    "fontSize": "16px",
     "list": [
       {
+        "pagePath": "pages/market/market",
+        "text": "市场"
+      },
+      {
         "pagePath": "pages/index/index",
-        "text": "首页",
-        "iconPath": "static/tab-home.png",
-        "selectedIconPath": "static/tab-home-active.png"
+        "text": "持仓"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的"
       }
     ]
   }

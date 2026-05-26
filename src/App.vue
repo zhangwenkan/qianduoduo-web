@@ -43,9 +43,13 @@ page {
   min-height: 100vh;
 }
 
-/* 隐藏tabBar */
-.uni-tabbar-bottom, .uni-tabbar {
-  display: none !important;
+/* H5 tabBar 字号兜底（pages.json fontSize 在部分版本不生效） */
+.uni-tabbar .uni-tabbar__label {
+  font-size: 16px !important;
+  line-height: 1.4 !important;
+}
+.uni-tabbar .uni-tabbar__bd {
+  padding: 4px 0 !important;
 }
 
 /* 清除默认样式 */
